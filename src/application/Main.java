@@ -16,15 +16,6 @@ public class Main extends Application{
 	
     public void start(Stage primaryStage) throws Exception {
     	
-/*    	URL fxmlUrl = this.getClass()
-    			.getClassLoader()
-    			.getResource("Server.fxml");
-        Pane mainPane = FXMLLoader.<Pane>load(fxmlUrl);
-        
-        primaryStage.setTitle("Assignment 1");
-        primaryStage.setScene(new Scene(mainPane));
-        primaryStage.show();     */   
-
         try {
             // Load root layout from fxml file.
             FXMLLoader loader = new FXMLLoader();
@@ -33,8 +24,8 @@ public class Main extends Application{
         			.getResource("Server.fxml");
             Pane mainPane = loader.<Pane>load(fxmlUrl);
 
-            ServerController controller = loader.getController();
-
+/*            ServerController controller = loader.getController();
+*/
             // Show the scene containing the root layout.
             Scene scene = new Scene(mainPane);
             primaryStage.setTitle("Assignment 1");
@@ -47,7 +38,5 @@ public class Main extends Application{
     }
     public static void main(String[] args) {
         Application.launch(args);
-/*		Server server = new Server();
-		server.start();*/
     }
 }

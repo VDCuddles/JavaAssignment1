@@ -33,7 +33,7 @@ public class ClientController implements Runnable{
             "blueviolet", "brown");	
         
 	// define the socket and io streams
-	Socket client;
+	Socket socket;
 	DataInputStream dis;
 	DataOutputStream dos;
     
@@ -73,15 +73,15 @@ public class ClientController implements Runnable{
 	    m_names.add(getNick());
         userList.setItems(m_names);
         
-		while (client == null) {
+		while (socket == null) {
 			try {
-				client = new Socket("localhost", 5000);
-				dis = new DataInputStream(client.getInputStream());
-				dos = new DataOutputStream(client.getOutputStream());
+				socket = new Socket("localhost", 5000);
+				dis = new DataInputStream(socket.getInputStream());
+				dos = new DataOutputStream(socket.getOutputStream());
 
 				// define a thread to take care of messages sent from the server
-				Thread clientThread = new Thread(this);
-				clientThread.start();
+				Thread socketThread = new Thread(this);
+				socketThread.start();
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -89,7 +89,7 @@ public class ClientController implements Runnable{
 			} 
 		}
 		
-		System.out.println(client.toString());
+		System.out.println(socket.toString());
 
 
     }
@@ -158,18 +158,10 @@ public class ClientController implements Runnable{
 	    	// Request focus on the username field by default.
 	    	Platform.runLater(() -> username.requestFocus());
 
-	    	// Convert the result to a username-password-pair when the login button is clicked.
-/*	    	dialog.setResultConverter(dialogButton -> {
-	    	    if (dialogButton == loginButtonType) {
-	    	        return new String(username.getText());
-	    	    }
-	    	    return null;
-	    	});*/
+
 
 	    	Optional<String> result = dialog.showAndWait();
-/*	    	if (result.isPresent()){
-	    	    System.out.println("Your name: " + result.get());
-	    	}*/
+	    	
 	    	nickName = username.textProperty().get().toString();
 	    	
 	    	return username.textProperty().get().toString();

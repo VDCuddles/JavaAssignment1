@@ -18,19 +18,6 @@ import javafx.stage.Stage;
 
 public class ServerController {
 	
-/*    private ClientController clientController;*/
-	
-/*    private SharedModel model;
-    
-    public void setModel(SharedModel model) {
-        this.model = model ;
-    }*/
-    
-/*    public void addModelUser(){
-    	model.addUserToList();
-    }*/
-    
-    /*public ListView<String> userList;*/
 	final long serialVersionUID = -2291453973624020582L;
 	ServerSocket serverSocket;
 	ArrayList <ServerThread> connectedClients = new ArrayList<ServerThread>();
@@ -121,19 +108,11 @@ public class ServerController {
 
     @FXML
     void closeButtonClick(ActionEvent event) {
-/*		try {
-			server.serverSocket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}*/
+
 		System.exit(0);
 
     }
-    
-/*    public void setClientController(ClientController clientController) {
-        this.clientController = clientController ;
-    }*/
-    
+ 
     void startNewClient() throws Exception{
     	
     	URL fxmlUrl = this.getClass()
@@ -144,11 +123,7 @@ public class ServerController {
         newStage.setTitle("Client Window");
         newStage.setScene(new Scene(mainPane));
         newStage.show();  
-        
-/*        setClientController(clientController);
-        Client client = new Client();
-        client.getUsername();
-        clientController.addUserToList();*/
+
     }
     
 }
