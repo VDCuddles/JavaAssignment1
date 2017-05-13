@@ -27,8 +27,6 @@ public class Server {
 		
 		System.out.println(serverSocket.toString());
 		
-		//Start the server
-		/*start();*/
 	}
 		
     @FXML

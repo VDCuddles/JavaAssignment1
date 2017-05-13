@@ -51,8 +51,8 @@ public class ServerController {
     void initialiseServerButtonClick(ActionEvent event)  throws Exception {
     	
     	System.out.println("Initialising server...");
-    	Server server = new Server();
-    	initialiseClientButton.setDisable(false);
+/*    	Server server = new Server();
+*/    	initialiseClientButton.setDisable(false);
     	initialiseServerButton.setDisable(true);
 
     }

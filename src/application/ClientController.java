@@ -1,5 +1,7 @@
 package application;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
 
 import javafx.application.Platform;
@@ -25,12 +27,12 @@ public class ClientController {
             "darkgoldenrod", "lightsalmon", "black", "rosybrown", "blue",
             "blueviolet", "brown");	
         
-    private SharedModel model ;
-
-    public void setModel(SharedModel model) {
-        this.model = model ;
-    }
+/*    private SharedModel model ;
+*/    
+    public String nickName;
     
+    String timeStamp = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z").format(new Date());
+
     @FXML
     public ListView<String> userList;
     
@@ -39,9 +41,14 @@ public class ClientController {
     
     @FXML
     public TextArea chatField;
+    
+/*    public void setModel(SharedModel model) {
+        this.model = model ;
+    }*/
 
     public void sendMessage(){
     	
+    	chatLog.appendText(nickName + "(" + timeStamp + "): ");
     	chatLog.appendText(chatField.getText());
     	chatLog.appendText("\n");
     	chatField.setText(null);
@@ -105,6 +112,7 @@ public class ClientController {
 /*	    	if (result.isPresent()){
 	    	    System.out.println("Your name: " + result.get());
 	    	}*/
+	    	nickName = username.textProperty().get().toString();
 	    	
 	    	return username.textProperty().get().toString();
 	    	
