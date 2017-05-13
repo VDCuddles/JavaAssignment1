@@ -1,29 +1,20 @@
 package application;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URL;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.TimerTask;
 
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 
 public class ServerController {
 	
@@ -40,12 +31,75 @@ public class ServerController {
     }*/
     
     /*public ListView<String> userList;*/
+	final long serialVersionUID = -2291453973624020582L;
+	ServerSocket serverSocket;
+	ArrayList <ServerThread> connectedClients = new ArrayList<ServerThread>();
+	
 
     @FXML
     public Button initialiseServerButton;
     
     @FXML
     public Button initialiseClientButton;
+    
+    @FXML
+    private TextArea systemLog;
+
+	public void initialize(){
+	
+		// construct ServerSocket
+		try {
+			serverSocket = new ServerSocket(5000);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		
+		System.out.println(serverSocket.toString());
+		System.out.println("test");
+		java.util.Timer t = new java.util.Timer();
+		t.schedule(new TimerTask() {
+
+		            @Override
+		            public void run() {
+/*		                System.out.println("This will run every 5 seconds");
+*/						start();
+		            }
+		        }, 100, 100);
+/*		
+*/		
+	}
+	
+	public void start()
+	{
+		try
+		{
+/*			while(true) // keep accepting new clients
+			{*/
+				Socket remoteClient = serverSocket.accept(); // block and wait for a connection from a client
+								
+				// construct a new server thread, to handle each client socket
+				ServerThread st = new ServerThread(remoteClient,this,connectedClients);
+				st.start();
+				connectedClients.add(st);
+				System.out.println("test");
+			/*}*/
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public TextArea getSystemLog() {
+		return systemLog;
+	}
+	
+	public void setSystemLog(TextArea systemLog) {
+		this.systemLog = systemLog;
+	}
+    
     
     @FXML
     void initialiseServerButtonClick(ActionEvent event)  throws Exception {

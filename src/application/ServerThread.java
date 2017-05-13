@@ -14,13 +14,13 @@ public class ServerThread extends Thread {
 	DataOutputStream dos;
 	
 	Socket remoteClient;
-	Server server;
+	ServerController server;
 	
 	String nick;
 	
 	ArrayList<ServerThread> connectedClients; // keep track of all the other clients connected to the Server
 	
-	public ServerThread(Socket remoteClient, Server server, ArrayList<ServerThread> connectedClients)
+	public ServerThread(Socket remoteClient, ServerController server, ArrayList<ServerThread> connectedClients)
 	{
 		this.remoteClient = remoteClient;
 		this.connectedClients = connectedClients;

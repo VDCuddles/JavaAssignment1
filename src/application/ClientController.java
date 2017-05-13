@@ -1,5 +1,10 @@
 package application;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -19,7 +24,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.GridPane;
 
-public class ClientController {
+public class ClientController implements Runnable{
 	
 
     ObservableList<String> m_names = FXCollections.observableArrayList(
@@ -27,8 +32,11 @@ public class ClientController {
             "darkgoldenrod", "lightsalmon", "black", "rosybrown", "blue",
             "blueviolet", "brown");	
         
-/*    private SharedModel model ;
-*/    
+	// define the socket and io streams
+	Socket client;
+	DataInputStream dis;
+	DataOutputStream dos;
+    
     public String nickName;
     
     String timeStamp = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z").format(new Date());
@@ -41,10 +49,6 @@ public class ClientController {
     
     @FXML
     public TextArea chatField;
-    
-/*    public void setModel(SharedModel model) {
-        this.model = model ;
-    }*/
 
     public void sendMessage(){
     	
@@ -52,14 +56,68 @@ public class ClientController {
     	chatLog.appendText(chatField.getText());
     	chatLog.appendText("\n");
     	chatField.setText(null);
+    	
+		try {
+			dos.writeInt(ServerConstants.CHAT_MESSAGE); // determine the type of message to be sent
+			dos.writeUTF(chatLog.getText()); // message payload
+			
+			dos.flush(); // force the message to be sent (sometimes data can be buffered)
+		}
+		catch (IOException e){
+			e.printStackTrace();
+		}
     }
     
 	public void initialize(){
 		
 	    m_names.add(getNick());
         userList.setItems(m_names);
+        
+		while (client == null) {
+			try {
+				client = new Socket("localhost", 5000);
+				dis = new DataInputStream(client.getInputStream());
+				dos = new DataOutputStream(client.getOutputStream());
+
+				// define a thread to take care of messages sent from the server
+				Thread clientThread = new Thread(this);
+				clientThread.start();
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 
+		}
+		
+		System.out.println(client.toString());
+
 
     }
+	
+	// process messages from the server
+	@Override
+	public void run()
+	{
+		while(true)
+		{
+			try {
+				int messageType = dis.readInt(); // receive a message from the server, determine message type based on an integer
+				
+				// decode message and process
+				switch(messageType)
+				{
+					case ServerConstants.CHAT_BROADCAST:
+						chatLog.appendText(dis.readUTF()+"\n");
+						break;
+				}
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		
+	}
 
 	 public String getNick(){
 

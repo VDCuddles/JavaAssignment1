@@ -24,7 +24,6 @@ public class Main extends Application{
         primaryStage.setTitle("Assignment 1");
         primaryStage.setScene(new Scene(mainPane));
         primaryStage.show();     */   
-        final SharedModel model = new SharedModel();
 
         try {
             // Load root layout from fxml file.
@@ -35,7 +34,6 @@ public class Main extends Application{
             Pane mainPane = loader.<Pane>load(fxmlUrl);
 
             ServerController controller = loader.getController();
-/*            controller.setModel(model);*/
 
             // Show the scene containing the root layout.
             Scene scene = new Scene(mainPane);
@@ -49,7 +47,7 @@ public class Main extends Application{
     }
     public static void main(String[] args) {
         Application.launch(args);
-		Server server = new Server();
-		server.start();
+/*		Server server = new Server();
+		server.start();*/
     }
 }
