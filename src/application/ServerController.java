@@ -15,6 +15,7 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
@@ -26,16 +27,29 @@ import javafx.util.Pair;
 
 public class ServerController {
 	
+/*    private ClientController clientController;*/
+	
+    private SharedModel model;
+    
+    public void setModel(SharedModel model) {
+        this.model = model ;
+    }
+    
+    public void addModelUser(){
+    	model.addUserToList();
+    }
+    
+    /*public ListView<String> userList;*/
+
     @FXML
     public Button initialiseServerButton;
     
     @FXML
     public Button initialiseClientButton;
-		
+    
     @FXML
     void initialiseServerButtonClick(ActionEvent event)  throws Exception {
     	
-		
     	System.out.println("Initialising server...");
     	Server server = new Server();
     	initialiseClientButton.setDisable(false);
@@ -46,11 +60,9 @@ public class ServerController {
     @FXML
     void initialiseClientButtonClick(ActionEvent event)  throws Exception {
     	
-		
     	System.out.println("Initialising client...");
     	startNewClient();
     	
-   
     }
 
     @FXML
@@ -64,6 +76,10 @@ public class ServerController {
 
     }
     
+/*    public void setClientController(ClientController clientController) {
+        this.clientController = clientController ;
+    }*/
+    
     void startNewClient() throws Exception{
     	
     	confirmNick();
@@ -75,7 +91,12 @@ public class ServerController {
         Stage newStage = new Stage();
         newStage.setTitle("Client Window");
         newStage.setScene(new Scene(mainPane));
-        newStage.show();   
+        newStage.show();  
+        
+/*        setClientController(clientController);
+        Client client = new Client();
+        client.getUsername();
+        clientController.addUserToList();*/
     }
     
     void confirmNick() throws Exception{
