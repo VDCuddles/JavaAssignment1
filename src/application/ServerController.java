@@ -82,8 +82,6 @@ public class ServerController {
     
     void startNewClient() throws Exception{
     	
-    	confirmNick();
-
     	URL fxmlUrl = this.getClass()
     			.getClassLoader()
     			.getResource("Client.fxml");
@@ -99,57 +97,4 @@ public class ServerController {
         clientController.addUserToList();*/
     }
     
-    void confirmNick() throws Exception{
-
-    	//code here references http://code.makery.ch/blog/javafx-dialogs-official/
-
-    	// Create the custom dialog.
-    	Dialog<String> dialog = new Dialog<>();
-    	dialog.setTitle("Nickname dialog");
-    	dialog.setHeaderText("Nickname Confirmation");
-
-    	// Set the button types.
-    	ButtonType loginButtonType = new ButtonType("Login", ButtonData.OK_DONE);
-    	dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
-
-    	// Create the username and password labels and fields.
-    	GridPane grid = new GridPane();
-    	grid.setHgap(10);
-    	grid.setVgap(10);
-    	grid.setPadding(new Insets(20, 150, 10, 10));
-
-    	TextField username = new TextField();
-    	username.setPromptText("Username");
-
-    	grid.add(new Label("Username:"), 0, 0);
-    	grid.add(username, 1, 0);
-
-    	// Enable/Disable login button depending on whether a username was entered.
-    	Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
-    	loginButton.setDisable(true);
-
-    	// Do some validation (using the Java 8 lambda syntax).
-    	username.textProperty().addListener((observable, oldValue, newValue) -> {
-    	    loginButton.setDisable(newValue.trim().isEmpty());
-    	});
-
-    	dialog.getDialogPane().setContent(grid);
-
-    	// Request focus on the username field by default.
-    	Platform.runLater(() -> username.requestFocus());
-
-    	// Convert the result to a username-password-pair when the login button is clicked.
-    	dialog.setResultConverter(dialogButton -> {
-    	    if (dialogButton == loginButtonType) {
-    	        return new String(username.getText());
-    	    }
-    	    return null;
-    	});
-
-    	Optional<String> result = dialog.showAndWait();
-
-    	result.ifPresent(name -> System.out.println("Your name: " + name));
-    }
-
-    	
 }
