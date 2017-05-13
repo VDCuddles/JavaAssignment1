@@ -29,15 +29,15 @@ public class ServerController {
 	
 /*    private ClientController clientController;*/
 	
-    private SharedModel model;
+/*    private SharedModel model;
     
     public void setModel(SharedModel model) {
         this.model = model ;
-    }
+    }*/
     
-    public void addModelUser(){
+/*    public void addModelUser(){
     	model.addUserToList();
-    }
+    }*/
     
     /*public ListView<String> userList;*/
 

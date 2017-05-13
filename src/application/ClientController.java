@@ -12,6 +12,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.GridPane;
@@ -32,12 +33,18 @@ public class ClientController {
     
     @FXML
     public ListView<String> userList;
-
+    
     @FXML
-    public void getListFromModel(){
+    public TextArea chatLog;
+    
+    @FXML
+    public TextArea chatField;
+
+    public void sendMessage(){
     	
-    	userList.setItems(model.getUserList());
-    	
+    	chatLog.appendText(chatField.getText());
+    	chatLog.appendText("\n");
+    	chatField.setText(null);
     }
     
 	public void initialize(){
@@ -46,7 +53,7 @@ public class ClientController {
         userList.setItems(m_names);
 
     }
-	
+
 	 public String getNick(){
 
 	    	//code here references http://code.makery.ch/blog/javafx-dialogs-official/

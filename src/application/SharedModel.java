@@ -7,7 +7,7 @@ import javafx.scene.control.ListView;
 
 public class SharedModel {
 	
-    ObservableList<String> m_names = FXCollections.observableArrayList(
+/*    ObservableList<String> m_names = FXCollections.observableArrayList(
             "chocolate", "salmon", "gold", "coral", "darkorchid",
             "darkgoldenrod", "lightsalmon", "black", "rosybrown", "blue",
             "blueviolet", "brown");	
@@ -34,5 +34,5 @@ public class SharedModel {
 		return m_names;
 		
 	}
-
+*/
 }
