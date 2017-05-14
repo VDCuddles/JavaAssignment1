@@ -1,6 +1,7 @@
 package application;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -46,6 +47,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 
 public class ClientController implements Runnable{
 	//drawer code here references http://java-buddy.blogspot.co.nz/2013/04/free-draw-on-javafx-canvas.html	
@@ -85,6 +87,10 @@ public class ClientController implements Runnable{
     @FXML
     private ImageView img0_0;
     @FXML
+    private Pane pane1_0;
+    @FXML
+    private ImageView img1_0;
+    @FXML
     private Pane pane0_11;
     @FXML
     private ImageView img0_11;
@@ -95,8 +101,11 @@ public class ClientController implements Runnable{
     
     
     
+    
     URL pencilUrl = this.getClass().getClassLoader().getResource("pencil.png");
     Image pencil = new Image("pencil.png");
+    URL saveUrl = this.getClass().getClassLoader().getResource("save.png");
+    Image save = new Image("save.png");
     URL blackUrl = this.getClass().getClassLoader().getResource("black.png");
     Image black = new Image("black.png");
     URL whiteUrl = this.getClass().getClassLoader().getResource("white.png");
@@ -107,6 +116,8 @@ public class ClientController implements Runnable{
 		
 	    final GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
 	    initDraw(graphicsContext);
+	    
+	    //canvas event handlers
 	    
 	    canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, 
                 new EventHandler<MouseEvent>(){
@@ -151,10 +162,22 @@ public class ClientController implements Runnable{
             }
         });
 
-		
+		//image settings
         img0_0.setImage(pencil);
+        img1_0.setImage(save);
         img0_11.setImage(black);
         img1_11.setImage(white);
+        
+        //save handler
+        img1_0.addEventHandler(MouseEvent.MOUSE_CLICKED, 
+                new EventHandler<MouseEvent>(){
+ 
+            @Override
+            public void handle(MouseEvent event) {
+            	saveImage(graphicsContext);
+ 
+            }
+        });
 		
 	    m_names.add(getNick());
         userList.setItems(m_names);
@@ -349,6 +372,39 @@ public class ClientController implements Runnable{
 	        gc.setLineWidth(1);
 	         
 	    }
+	    
+	    @FXML
+	    private void saveImage(GraphicsContext gc){
+	    	
+//	        WritableImage writableImage = new WritableImage((int)canvas.getWidth(), (int)canvas.getHeight());
+//            File file = new File("temp.png");
+//            canvas.snapshot(null, writableImage);
+//            try {
+//                ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", file);
+//                System.out.println(file.toString());
+//            } catch (IOException ex) {
+//                Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+	    	 FileChooser fileChooser = new FileChooser();
+             
+             //Set extension filter
+             FileChooser.ExtensionFilter extFilter = 
+                     new FileChooser.ExtensionFilter("png files (*.png)", "*.png");
+             fileChooser.getExtensionFilters().add(extFilter);
+            
+             //Show save file dialog
+             File file = fileChooser.showSaveDialog(null);
+              
+             if(file != null){
+                 try {
+                     WritableImage writableImage = new WritableImage((int)canvas.getWidth(), (int)canvas.getHeight());
+                     canvas.snapshot(null, writableImage);
+                     ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", file);
+                 } catch (IOException ex) {
+                   Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
+                 }
+             }
+		 }
 	    
 	    @FXML
 	    private void selectPencil(){
