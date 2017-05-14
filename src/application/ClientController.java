@@ -27,19 +27,14 @@ import javafx.scene.layout.GridPane;
 public class ClientController implements Runnable{
 	
 
-    ObservableList<String> m_names = FXCollections.observableArrayList(
-            "chocolate", "salmon", "gold", "coral", "darkorchid",
-            "darkgoldenrod", "lightsalmon", "black", "rosybrown", "blue",
-            "blueviolet", "brown");	
+    ObservableList<String> m_names = FXCollections.observableArrayList();	
         
 	// define the socket and io streams
 	Socket socket;
 	DataInputStream dis;
 	DataOutputStream dos;
     
-    public String nickName;
-    
-    String timeStamp = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z").format(new Date());
+    public String nick;
 
     @FXML
     public ListView<String> userList;
@@ -52,20 +47,24 @@ public class ClientController implements Runnable{
 
     public void sendMessage(){
     	
-    	chatLog.appendText(nickName + "(" + timeStamp + "): ");
+    	//timestamp in this format to help with historical referencing
+        String timeStamp = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z").format(new Date());
+    	chatLog.appendText(nick + " (" + timeStamp + "): ");
     	chatLog.appendText(chatField.getText());
     	chatLog.appendText("\n");
-    	chatField.setText(null);
     	
 		try {
 			dos.writeInt(ServerConstants.CHAT_MESSAGE); // determine the type of message to be sent
-			dos.writeUTF(chatLog.getText()); // message payload
+			dos.writeUTF(chatField.getText()); // message payload
 			
 			dos.flush(); // force the message to be sent (sometimes data can be buffered)
 		}
 		catch (IOException e){
 			e.printStackTrace();
 		}
+		
+    	chatField.setText(null);
+
     }
     
 	public void initialize(){
@@ -73,6 +72,7 @@ public class ClientController implements Runnable{
 	    m_names.add(getNick());
         userList.setItems(m_names);
         
+        //apply socket and I/O
 		while (socket == null) {
 			try {
 				socket = new Socket("localhost", 5000);
@@ -82,6 +82,12 @@ public class ClientController implements Runnable{
 				// define a thread to take care of messages sent from the server
 				Thread socketThread = new Thread(this);
 				socketThread.start();
+				
+				dos.writeInt(ServerConstants.REGISTER_CLIENT);
+				dos.writeUTF(nick);
+				dos.flush();
+				
+				
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -108,6 +114,18 @@ public class ClientController implements Runnable{
 				{
 					case ServerConstants.CHAT_BROADCAST:
 						chatLog.appendText(dis.readUTF()+"\n");
+						break;
+					case ServerConstants.REGISTER_CLIENT:
+						//Clear the client list
+						m_names.clear();
+						String data = dis.readUTF();
+						//As we are recieving a serialized list, deserialize it
+						String[] clients = data.split(":");
+						for(String client : clients)
+						{
+							if(client != null && !client.equals(""))
+								m_names.add(client);
+						}
 						break;
 				}
 			}
@@ -162,7 +180,7 @@ public class ClientController implements Runnable{
 
 	    	Optional<String> result = dialog.showAndWait();
 	    	
-	    	nickName = username.textProperty().get().toString();
+	    	nick = username.textProperty().get().toString();
 	    	
 	    	return username.textProperty().get().toString();
 	    	

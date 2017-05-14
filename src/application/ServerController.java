@@ -44,13 +44,14 @@ public class ServerController {
 		}
 		
 		System.out.println(serverSocket.toString());
-		System.out.println("test");
+		
+		//accept new clients ever 100ms through start()
 		java.util.Timer t = new java.util.Timer();
 		t.schedule(new TimerTask() {
 
 		            @Override
 		            public void run() {
-/*		                System.out.println("This will run every 5 seconds");
+/*		                System.out.println("This will run every 100ms");
 */						start();
 		            }
 		        }, 100, 100);
@@ -86,17 +87,6 @@ public class ServerController {
 	public void setSystemLog(TextArea systemLog) {
 		this.systemLog = systemLog;
 	}
-    
-    
-    @FXML
-    void initialiseServerButtonClick(ActionEvent event)  throws Exception {
-    	
-    	System.out.println("Initialising server...");
-/*    	Server server = new Server();
-*/    	initialiseClientButton.setDisable(false);
-    	initialiseServerButton.setDisable(true);
-
-    }
     
     @FXML
     void initialiseClientButtonClick(ActionEvent event)  throws Exception {

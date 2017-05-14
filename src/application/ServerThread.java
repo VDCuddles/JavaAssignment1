@@ -4,7 +4,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -49,14 +51,16 @@ public class ServerThread extends Thread {
 					case ServerConstants.CHAT_MESSAGE:
 						String data = dis.readUTF();
 						System.err.println(data);
-						server.getSystemLog().appendText(remoteClient.getInetAddress()+":"+remoteClient.getPort()+">"+ nick + ": "+data+"\n");
+						server.getSystemLog().appendText(remoteClient.getInetAddress()+":"+remoteClient.getPort()+" >"+ nick + ": "+data+"\n");
 						
 						for(ServerThread otherClient: connectedClients)
 						{
 							if(!otherClient.equals(this)) // don't send the message to the client that sent the message in the first place
 							{
-								otherClient.getDos().writeInt(ServerConstants.CHAT_BROADCAST);
-								otherClient.getDos().writeUTF(nick + "> " + data);
+								//timestamp in this format to help with historical referencing
+							    String timeStamp = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z").format(new Date());
+							    otherClient.getDos().writeInt(ServerConstants.CHAT_BROADCAST);
+								otherClient.getDos().writeUTF(nick + "> " + "(" + timeStamp + "): " + data );
 							}
 						}
 						
@@ -68,14 +72,15 @@ public class ServerThread extends Thread {
 						String clients = "";
 						
 						//Serialize the connected clients
+						server.getSystemLog().appendText(remoteClient.getInetAddress()+":"+remoteClient.getPort()+">"+nick+" has connected\n");
+
 						for(ServerThread otherClient: connectedClients)
 						{
-							server.getSystemLog().appendText(remoteClient.getInetAddress()+":"+remoteClient.getPort()+">"+nick+" has connected\n");
 							
 							otherClient.getDos().writeInt(ServerConstants.CHAT_BROADCAST);
-							otherClient.getDos().writeUTF(remoteClient.getInetAddress()+":"+remoteClient.getPort()+">"+nick+" has connected");
+							otherClient.getDos().writeUTF(remoteClient.getPort()+">"+nick+" connected");
 							
-							clients += otherClient.remoteClient.getInetAddress() + "/" + otherClient.remoteClient.getPort() + "/" + otherClient.getNick() + ":";
+							clients += otherClient.getNick() + ":";
 						}
 						
 						//Push the clients to each connected client
