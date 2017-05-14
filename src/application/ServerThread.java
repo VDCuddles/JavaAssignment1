@@ -21,7 +21,7 @@ public class ServerThread extends Thread {
 	DataInputStream dis;
 	DataOutputStream dos;
 	OutputStream outputStream;
-    InputStream inputStream;
+	InputStream inputStream;
 	
 	Socket remoteClient;
 	ServerController server;
@@ -37,6 +37,10 @@ public class ServerThread extends Thread {
 		try {
 			this.dis = new DataInputStream(remoteClient.getInputStream());
 			this.dos = new DataOutputStream(remoteClient.getOutputStream());
+			this.inputStream = remoteClient.getInputStream();
+			this.outputStream = remoteClient.getOutputStream();
+//			this.bainputStream = new ByteArrayInputStream(remoteClient.getInputStream());
+//			this.baoutputStream = new ByteArrayOutputStream(remoteClient.getOutputStream());
 			this.server = server;
 		}
 		catch (IOException e)
@@ -77,17 +81,6 @@ public class ServerThread extends Thread {
 					case ServerConstants.DRAW_IMAGE:
 				        InputStream inputStream = remoteClient.getInputStream();
 						System.err.println(inputStream);
-
-/*		                 WritableImage writableImage = new WritableImage((int)canvas.getWidth(), (int)canvas.getHeight());
-		                 canvas.snapshot(null, writableImage);
-		                 RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
-		                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		                 ImageIO.write(renderedImage, "png", byteArrayOutputStream);
-		                 
-		                 byte[] size = ByteBuffer.allocate(4).putInt(byteArrayOutputStream.size()).array();
-		                 outputStream.write(size);
-		                 outputStream.write(byteArrayOutputStream.toByteArray());
-		                 outputStream.flush();*/
 						
 						server.getSystemLog().appendText(remoteClient.getInetAddress()+": (image data sent)");
 						
@@ -98,18 +91,12 @@ public class ServerThread extends Thread {
 								
 							    otherClient.getDos().writeInt(ServerConstants.DRAW_BROADCAST);
 
-								byte[] sizeAr = new byte[4];
-						        inputStream.read(sizeAr);
-						        int bsize = ByteBuffer.wrap(sizeAr).asIntBuffer().get();
-
-						        byte[] imageAr = new byte[bsize];
-						        inputStream.read(imageAr);
-
-						        BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageAr));
-				                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-				                byte[] size = ByteBuffer.allocate(4).putInt(byteArrayOutputStream.size()).array();
-				                otherClient.getOutputStream().write(size);
-				                 
+				                ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+				                byte[] size = ByteBuffer.allocate(4).putInt(byteOutput.size()).array();
+//				                byteOutput.write(size);
+//				                otherClient.getOutputStream() = byteOutput;
+				                otherClient.getOutputStream().write(size);			                 
+				                otherClient.getOutputStream().write(byteOutput.toByteArray());			                 
 							}
 						}
 
@@ -183,6 +170,7 @@ public class ServerThread extends Thread {
 	}
 	
 	public OutputStream getOutputStream() {
+		
 		return outputStream;
 	}
 

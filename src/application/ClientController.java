@@ -1,11 +1,14 @@
 package application;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,9 +16,8 @@ import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.sql.Connection;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -69,7 +71,7 @@ public class ClientController implements Runnable{
 	
     private ImageView selectedTool;
     private ImageView selectedColour;
-
+    
     public String nick;
 
     @FXML
@@ -224,6 +226,31 @@ public class ClientController implements Runnable{
 	public void initialize(){
 		
 
+		//image settings
+        img0_0.setImage(pencil);
+        img1_0.setImage(save);
+//        img0_1.setImage(pencil);
+//        img1_1.setImage(save);
+        img0_2.setImage(violet);
+        img1_2.setImage(darkviolet);
+        img0_3.setImage(navyblue);
+        img1_3.setImage(cyan);
+        img0_4.setImage(darkmagenta);
+        img1_4.setImage(lightcyan);
+        img0_5.setImage(darkgreen);
+        img1_5.setImage(turquoise);
+        img0_6.setImage(green);
+        img1_6.setImage(rose);
+        img0_7.setImage(yellow);
+        img1_7.setImage(amber);
+        img0_8.setImage(red);
+        img1_8.setImage(orange);
+        img0_9.setImage(grey);
+        img1_9.setImage(brown);
+        img0_10.setImage(darkgrey);
+        img1_10.setImage(lightgrey);
+        img0_11.setImage(black);
+        img1_11.setImage(white);
 		
 		colourPaneList = new Pane[]{pane0_2,pane1_2,pane0_3,pane1_3,pane0_4,pane1_4,pane0_5,pane1_5,
 				pane0_6,pane1_6,pane0_7,pane1_7,pane0_8,pane1_8,pane0_9,pane1_9,
@@ -279,32 +306,6 @@ public class ClientController implements Runnable{
  
             }
         });
-
-		//image settings
-        img0_0.setImage(pencil);
-        img1_0.setImage(save);
-//        img0_1.setImage(pencil);
-//        img1_1.setImage(save);
-        img0_2.setImage(violet);
-        img1_2.setImage(darkviolet);
-        img0_3.setImage(navyblue);
-        img1_3.setImage(cyan);
-        img0_4.setImage(darkmagenta);
-        img1_4.setImage(lightcyan);
-        img0_5.setImage(darkgreen);
-        img1_5.setImage(turquoise);
-        img0_6.setImage(green);
-        img1_6.setImage(rose);
-        img0_7.setImage(yellow);
-        img1_7.setImage(amber);
-        img0_8.setImage(red);
-        img1_8.setImage(orange);
-        img0_9.setImage(grey);
-        img1_9.setImage(brown);
-        img0_10.setImage(darkgrey);
-        img1_10.setImage(lightgrey);
-        img0_11.setImage(black);
-        img1_11.setImage(white);
         
         //tool handlers
         img0_0.addEventHandler(MouseEvent.MOUSE_CLICKED, 
@@ -540,7 +541,9 @@ public class ClientController implements Runnable{
 				socket = new Socket("localhost", 5000);
 				dis = new DataInputStream(socket.getInputStream());
 				dos = new DataOutputStream(socket.getOutputStream());
-
+				inputStream = socket.getInputStream();
+				outputStream = socket.getOutputStream();
+				
 				// define a thread to take care of messages sent from the server
 				Thread socketThread = new Thread(this);
 				socketThread.start();
@@ -589,6 +592,17 @@ public class ClientController implements Runnable{
 								m_names.add(client);
 						}
 						break;
+					case ServerConstants.DRAW_BROADCAST:
+			            try {
+			            	InputStream resourceBuff = inputStream;
+			                BufferedImage image = ImageIO.read(resourceBuff);
+//			                Graphics2D g2 = image.createGraphics();
+			                canvas.getGraphicsContext2D().drawImage(SwingFXUtils.toFXImage(image,null), (double)image.getWidth(), (double)image.getHeight());
+
+			                
+			            } catch (IOException ex) {
+			                ex.printStackTrace();
+			            }
 				}
 			}
 			catch (IOException e)
@@ -637,20 +651,23 @@ public class ClientController implements Runnable{
                  } catch (IOException ex) {
                      Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
                  }
-                 
+//                 
                  BufferedImage bImage = ImageIO.read(new File("temp.png"));
-                 System.out.println("bImage = " + bImage.toString());
+//                 System.out.println("bImage = " + bImage.toString());
 //                 RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
                  ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-                 ImageIO.write( SwingFXUtils.fromFXImage( writableImage, bImage ), "png", byteOutput );
-                 System.out.println("byteOutput after write = " + byteOutput.toString());
+//                 ImageIO.write( SwingFXUtils.fromFXImage( writableImage, bImage ), "png", byteOutput );
+//                 ImageIO.write( bImage , "png", outputStream );
+//                 ImageIO.write( bImage , "png", outputStream );
+//                 System.out.println("byteOutput after write = " + byteOutput.toString());
                  byte[] size = ByteBuffer.allocate(4).putInt(byteOutput.size()).array();
-                 for (byte member : size){
-                     System.out.println("members = " + member);
-                 }
+//                 for (byte member : size){
+//                     System.out.println("members = " + member);
+//                 }
 
                  try {
-//                     outputStream.write(size);
+                	 outputStream = new ByteArrayOutputStream();
+                     outputStream.write(size);
                      outputStream.write(byteOutput.toByteArray());
                      outputStream.flush();
                  } catch (IOException ex) {
