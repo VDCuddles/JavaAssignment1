@@ -176,81 +176,7 @@ public class ClientController implements Runnable{
     @FXML
     private ImageView img1_11;
     
-    
-    //image URLs for control tools
-    URL pencilUrl = this.getClass().getClassLoader().getResource("pencil.png");
-    Image pencil = new Image("pencil.png");
-    URL saveUrl = this.getClass().getClassLoader().getResource("save.png");
-    Image save = new Image("save.png");
-    URL greyUrl = this.getClass().getClassLoader().getResource("grey.png");
-    Image grey = new Image("grey.png");
-    URL turquoiseUrl = this.getClass().getClassLoader().getResource("turquoise.png");
-    Image turquoise = new Image("turquoise.png");
-    URL cyanUrl = this.getClass().getClassLoader().getResource("cyan.png");
-    Image cyan = new Image("cyan.png");
-    URL redUrl = this.getClass().getClassLoader().getResource("red.png");
-    Image red = new Image("red.png");
-    URL yellowUrl = this.getClass().getClassLoader().getResource("yellow.png");
-    Image yellow = new Image("yellow.png");
-    URL roseUrl = this.getClass().getClassLoader().getResource("rose.png");
-    Image rose = new Image("rose.png");
-    URL greenUrl = this.getClass().getClassLoader().getResource("green.png");
-    Image green = new Image("green.png");
-    URL navyblueUrl = this.getClass().getClassLoader().getResource("navyblue.png");
-    Image navyblue = new Image("navyblue.png");
-    URL orangeUrl = this.getClass().getClassLoader().getResource("orange.png");
-    Image orange = new Image("orange.png");
-    URL darkgreenUrl = this.getClass().getClassLoader().getResource("darkgreen.png");
-    Image darkgreen = new Image("darkgreen.png");
-    URL darkvioletUrl = this.getClass().getClassLoader().getResource("darkviolet.png");
-    Image darkviolet = new Image("darkviolet.png");
-    URL violetUrl = this.getClass().getClassLoader().getResource("violet.png");
-    Image violet = new Image("violet.png");
-    URL brownUrl = this.getClass().getClassLoader().getResource("brown.png");
-    Image brown = new Image("brown.png");
-    URL amberUrl = this.getClass().getClassLoader().getResource("amber.png");
-    Image amber = new Image("amber.png");
-    URL lightgreyUrl = this.getClass().getClassLoader().getResource("lightgrey.png");
-    Image lightgrey = new Image("lightgrey.png");
-    URL lightcyanUrl = this.getClass().getClassLoader().getResource("lightcyan.png");
-    Image lightcyan = new Image("lightcyan.png");
-    URL darkgreyUrl = this.getClass().getClassLoader().getResource("darkgrey.png");
-    Image darkgrey = new Image("darkgrey.png");
-    URL darkmagentaUrl = this.getClass().getClassLoader().getResource("darkmagenta.png");
-    Image darkmagenta = new Image("darkmagenta.png");
-    URL blackUrl = this.getClass().getClassLoader().getResource("black.png");
-    Image black = new Image("black.png");
-    URL whiteUrl = this.getClass().getClassLoader().getResource("white.png");
-    Image white = new Image("white.png");
-    
 	public void initialize(){
-		
-
-		//image settings
-        img0_0.setImage(pencil);
-        img1_0.setImage(save);
-//        img0_1.setImage(pencil);
-//        img1_1.setImage(save);
-        img0_2.setImage(violet);
-        img1_2.setImage(darkviolet);
-        img0_3.setImage(navyblue);
-        img1_3.setImage(cyan);
-        img0_4.setImage(darkmagenta);
-        img1_4.setImage(lightcyan);
-        img0_5.setImage(darkgreen);
-        img1_5.setImage(turquoise);
-        img0_6.setImage(green);
-        img1_6.setImage(rose);
-        img0_7.setImage(yellow);
-        img1_7.setImage(amber);
-        img0_8.setImage(red);
-        img1_8.setImage(orange);
-        img0_9.setImage(grey);
-        img1_9.setImage(brown);
-        img0_10.setImage(darkgrey);
-        img1_10.setImage(lightgrey);
-        img0_11.setImage(black);
-        img1_11.setImage(white);
 		
 		colourPaneList = new Pane[]{pane0_2,pane1_2,pane0_3,pane1_3,pane0_4,pane1_4,pane0_5,pane1_5,
 				pane0_6,pane1_6,pane0_7,pane1_7,pane0_8,pane1_8,pane0_9,pane1_9,
@@ -581,21 +507,25 @@ public class ClientController implements Runnable{
 						chatLog.appendText(dis.readUTF()+"\n");
 						break;
 					case ServerConstants.REGISTER_CLIENT:
+					try {
 						//Clear the client list
 						m_names.clear();
 						String data = dis.readUTF();
 						//As we are recieving a serialized list, deserialize it
 						String[] clients = data.split(":");
-						for(String client : clients)
-						{
-							if(client != null && !client.equals(""))
+						for (String client : clients) {
+							if (client != null && !client.equals(""))
 								m_names.add(client);
-						}
-						break;
+						} 
+					} catch (Exception ex) {
+		                ex.printStackTrace();
+					}
+					break;
 					case ServerConstants.DRAW_BROADCAST:
 			            try {
 			            	InputStream resourceBuff = inputStream;
 			                BufferedImage image = ImageIO.read(resourceBuff);
+			                System.out.println("image = " + image.toString());
 //			                Graphics2D g2 = image.createGraphics();
 			                canvas.getGraphicsContext2D().drawImage(SwingFXUtils.toFXImage(image,null), (double)image.getWidth(), (double)image.getHeight());
 
@@ -647,26 +577,16 @@ public class ClientController implements Runnable{
                  canvas.snapshot(null, writableImage);
                  try {
                      ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", file);
-                     System.out.println(file.toString() + " saved to temp.png");
                  } catch (IOException ex) {
                      Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
                  }
-//                 
+                 
                  BufferedImage bImage = ImageIO.read(new File("temp.png"));
-//                 System.out.println("bImage = " + bImage.toString());
-//                 RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
                  ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-//                 ImageIO.write( SwingFXUtils.fromFXImage( writableImage, bImage ), "png", byteOutput );
-//                 ImageIO.write( bImage , "png", outputStream );
-//                 ImageIO.write( bImage , "png", outputStream );
-//                 System.out.println("byteOutput after write = " + byteOutput.toString());
                  byte[] size = ByteBuffer.allocate(4).putInt(byteOutput.size()).array();
-//                 for (byte member : size){
-//                     System.out.println("members = " + member);
-//                 }
 
                  try {
-                	 outputStream = new ByteArrayOutputStream();
+                	 outputStream = byteOutput;
                      outputStream.write(size);
                      outputStream.write(byteOutput.toByteArray());
                      outputStream.flush();
@@ -674,10 +594,6 @@ public class ClientController implements Runnable{
                      Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
                  }
                  
-                 
-//             } catch (IOException ex) {
-//                 Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
-//             }
 			dos.flush(); // force the message to be sent (sometimes data can be buffered)
 		}
 		catch (IOException e){
@@ -796,7 +712,6 @@ public class ClientController implements Runnable{
 	    	
 	    	case 1:
 	    	System.out.println("black colour selected");
-	    	selectedColour = img0_11;
 	    	setBackgroundForColour(pane0_11);
 	        gc.setFill(Color.BLACK);
 	        gc.setStroke(Color.BLACK);
@@ -804,7 +719,6 @@ public class ClientController implements Runnable{
 	        
 	    	case 2:
 	    	System.out.println("white colour selected");
-	    	selectedColour = img1_11;
 	    	setBackgroundForColour(pane1_11);
 	        gc.setFill(Color.WHITE);
 	        gc.setStroke(Color.WHITE);
@@ -812,7 +726,6 @@ public class ClientController implements Runnable{
 	        
 	    	case 3:
 	    	System.out.println("white colour selected");
-	    	selectedColour = img1_10;
 	    	setBackgroundForColour(pane1_10);
 	        gc.setFill(Color.web("e1e1e1"));
 	        gc.setStroke(Color.web("e1e1e1"));
@@ -820,7 +733,6 @@ public class ClientController implements Runnable{
 	        
 	    	case 4:
 	    	System.out.println("darkgrey colour selected");
-	    	selectedColour = img0_10;
 	    	setBackgroundForColour(pane0_10);
 	        gc.setFill(Color.web("363636"));
 	        gc.setStroke(Color.web("363636"));
@@ -828,7 +740,6 @@ public class ClientController implements Runnable{
 	        
 	    	case 5:
 	    	System.out.println("brown colour selected");
-	    	selectedColour = img1_9;
 	    	setBackgroundForColour(pane1_9);
 	        gc.setFill(Color.web("603913"));
 	        gc.setStroke(Color.web("603913"));
@@ -836,7 +747,6 @@ public class ClientController implements Runnable{
 	        
 	    	case 6:
 	    	System.out.println("grey colour selected");
-	    	selectedColour = img0_9;
 	    	setBackgroundForColour(pane0_9);
 	        gc.setFill(Color.web("898989"));
 	        gc.setStroke(Color.web("898989"));
@@ -844,7 +754,6 @@ public class ClientController implements Runnable{
 	        
 	    	case 7:
 	    	System.out.println("orange colour selected");
-	    	selectedColour = img1_8;
 	    	setBackgroundForColour(pane1_8);
 	        gc.setFill(Color.web("f26522"));
 	        gc.setStroke(Color.web("f26522"));
@@ -852,7 +761,6 @@ public class ClientController implements Runnable{
 	        
 	    	case 8:
 	    	System.out.println("red colour selected");
-	    	selectedColour = img0_8;
 	    	setBackgroundForColour(pane0_8);
 	        gc.setFill(Color.web("ff0000"));
 	        gc.setStroke(Color.web("ff0000"));
@@ -860,7 +768,6 @@ public class ClientController implements Runnable{
 	        
 	    	case 9:
 	    	System.out.println("amber colour selected");
-	    	selectedColour = img1_7;
 	    	setBackgroundForColour(pane1_7);
 	        gc.setFill(Color.web("f9ad81"));
 	        gc.setStroke(Color.web("f9ad81"));
@@ -868,7 +775,6 @@ public class ClientController implements Runnable{
 	        
 	    	case 10:
 	    	System.out.println("yellow colour selected");
-	    	selectedColour = img0_7;
 	    	setBackgroundForColour(pane0_7);
 	        gc.setFill(Color.web("ffff00"));
 	        gc.setStroke(Color.web("ffff00"));
@@ -876,7 +782,6 @@ public class ClientController implements Runnable{
 	        
 	    	case 11:
 	    	System.out.println("rose colour selected");
-	    	selectedColour = img1_6;
 	    	setBackgroundForColour(pane1_6);
 	        gc.setFill(Color.web("ed145b"));
 	        gc.setStroke(Color.web("ed145b"));
@@ -884,7 +789,6 @@ public class ClientController implements Runnable{
 	        
 	    	case 12:
 	    	System.out.println("green colour selected");
-	    	selectedColour = img0_6;
 	    	setBackgroundForColour(pane0_6);
 	        gc.setFill(Color.web("00ff00"));
 	        gc.setStroke(Color.web("00ff00"));
@@ -892,7 +796,6 @@ public class ClientController implements Runnable{
 	        
 	    	case 13:
 	    	System.out.println("turquoise colour selected");
-	    	selectedColour = img1_5;
 	    	setBackgroundForColour(pane1_5);
 	        gc.setFill(Color.web("287175"));
 	        gc.setStroke(Color.web("287175"));
@@ -900,7 +803,6 @@ public class ClientController implements Runnable{
 	        
 	    	case 14:
 	    	System.out.println("darkgreen colour selected");
-	    	selectedColour = img0_5;
 	    	setBackgroundForColour(pane0_5);
 	        gc.setFill(Color.web("005826"));
 	        gc.setStroke(Color.web("005826"));
@@ -908,7 +810,6 @@ public class ClientController implements Runnable{
 	        
 	    	case 15:
 	    	System.out.println("lightcyan colour selected");
-	    	selectedColour = img1_4;
 	    	setBackgroundForColour(pane1_4);
 	        gc.setFill(Color.web("00bff3"));
 	        gc.setStroke(Color.web("00bff3"));
@@ -916,7 +817,6 @@ public class ClientController implements Runnable{
 	        
 	    	case 16:
 	    	System.out.println("darkmagenta colour selected");
-	    	selectedColour = img0_4;
 	    	setBackgroundForColour(pane0_4);
 	        gc.setFill(Color.web("9e005d"));
 	        gc.setStroke(Color.web("9e005d"));
@@ -924,7 +824,6 @@ public class ClientController implements Runnable{
 	        
 	    	case 17:
 	    	System.out.println("cyan colour selected");
-	    	selectedColour = img1_3;
 	    	setBackgroundForColour(pane1_3);
 	        gc.setFill(Color.web("00ffff"));
 	        gc.setStroke(Color.web("00ffff"));
@@ -932,7 +831,6 @@ public class ClientController implements Runnable{
 	        
 	    	case 18:
 	    	System.out.println("navyblue colour selected");
-	    	selectedColour = img0_3;
 	    	setBackgroundForColour(pane0_3);
 	        gc.setFill(Color.web("0054a6"));
 	        gc.setStroke(Color.web("0054a6"));
@@ -940,7 +838,6 @@ public class ClientController implements Runnable{
 	        
 	    	case 19:
 	    	System.out.println("darkviolet colour selected");
-	    	selectedColour = img1_2;
 	    	setBackgroundForColour(pane1_2);
 	        gc.setFill(Color.web("1b1464"));
 	        gc.setStroke(Color.web("1b1464"));
@@ -948,7 +845,6 @@ public class ClientController implements Runnable{
 	        
 	    	case 20:
 	    	System.out.println("violet colour selected");
-	    	selectedColour = img0_2;
 	    	setBackgroundForColour(pane0_2);
 	        gc.setFill(Color.web("2e3192"));
 	        gc.setStroke(Color.web("2e3192"));
