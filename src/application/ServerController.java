@@ -105,9 +105,7 @@ public class ServerController {
  
     void startNewClient() throws Exception{
     	
-    	URL fxmlUrl = this.getClass()
-    			.getClassLoader()
-    			.getResource("Client.fxml");
+    	URL fxmlUrl = this.getClass().getClassLoader().getResource("Client.fxml");
         Pane mainPane = FXMLLoader.<Pane>load(fxmlUrl);
         Stage newStage = new Stage();
         newStage.setTitle("Client Window");

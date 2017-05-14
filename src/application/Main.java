@@ -19,9 +19,7 @@ public class Main extends Application{
         try {
             // Load root layout from fxml file.
             FXMLLoader loader = new FXMLLoader();
-            URL fxmlUrl = this.getClass()
-        			.getClassLoader()
-        			.getResource("Server.fxml");
+            URL fxmlUrl = this.getClass().getClassLoader().getResource("Server.fxml");
             Pane mainPane = loader.<Pane>load(fxmlUrl);
 
 /*            ServerController controller = loader.getController();
