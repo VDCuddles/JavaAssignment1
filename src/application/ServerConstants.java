@@ -7,4 +7,6 @@ public class ServerConstants {
 	public static final int PRIVATE_MESSAGE = 3;
 	public static final int REGISTER_CLIENT = 4;
 	public static final int REGISTER_BROADCAST = 5;
+	public static final int DRAW_IMAGE = 6;
+	public static final int DRAW_BROADCAST = 7;
 }

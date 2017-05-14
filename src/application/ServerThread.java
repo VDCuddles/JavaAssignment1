@@ -1,19 +1,27 @@
 package application;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import javax.imageio.ImageIO;
 
 
 public class ServerThread extends Thread {
 
 	DataInputStream dis;
 	DataOutputStream dos;
+	OutputStream outputStream;
+    InputStream inputStream;
 	
 	Socket remoteClient;
 	ServerController server;
@@ -65,6 +73,48 @@ public class ServerThread extends Thread {
 						}
 						
 						break;
+						
+					case ServerConstants.DRAW_IMAGE:
+				        InputStream inputStream = remoteClient.getInputStream();
+						System.err.println(inputStream);
+
+/*		                 WritableImage writableImage = new WritableImage((int)canvas.getWidth(), (int)canvas.getHeight());
+		                 canvas.snapshot(null, writableImage);
+		                 RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+		                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		                 ImageIO.write(renderedImage, "png", byteArrayOutputStream);
+		                 
+		                 byte[] size = ByteBuffer.allocate(4).putInt(byteArrayOutputStream.size()).array();
+		                 outputStream.write(size);
+		                 outputStream.write(byteArrayOutputStream.toByteArray());
+		                 outputStream.flush();*/
+						
+						server.getSystemLog().appendText(remoteClient.getInetAddress()+": (image data sent)");
+						
+						for(ServerThread otherClient: connectedClients)
+						{
+							if(!otherClient.equals(this)) // don't send the message to the client that sent the message in the first place
+							{
+								
+							    otherClient.getDos().writeInt(ServerConstants.DRAW_BROADCAST);
+
+								byte[] sizeAr = new byte[4];
+						        inputStream.read(sizeAr);
+						        int bsize = ByteBuffer.wrap(sizeAr).asIntBuffer().get();
+
+						        byte[] imageAr = new byte[bsize];
+						        inputStream.read(imageAr);
+
+						        BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageAr));
+				                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+				                byte[] size = ByteBuffer.allocate(4).putInt(byteArrayOutputStream.size()).array();
+				                otherClient.getOutputStream().write(size);
+				                 
+							}
+						}
+
+						break;
+						
 					case ServerConstants.REGISTER_CLIENT:
 						
 						nick = dis.readUTF();
@@ -91,6 +141,7 @@ public class ServerThread extends Thread {
 						}
 						
 						break;	
+						
 					case ServerConstants.PRIVATE_MESSAGE:
 						for(ServerThread otherClient: connectedClients)
 						{
@@ -111,6 +162,7 @@ public class ServerThread extends Thread {
 							}
 						}
 						break;
+						
 				}				
 			}
 			catch (IOException e)
@@ -129,4 +181,9 @@ public class ServerThread extends Thread {
 	public DataOutputStream getDos() {
 		return dos;
 	}
+	
+	public OutputStream getOutputStream() {
+		return outputStream;
+	}
+
 }

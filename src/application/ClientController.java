@@ -1,21 +1,28 @@
-//drawer code here references http://java-buddy.blogspot.co.nz/2013/04/free-draw-on-javafx-canvas.html
-
-
 package application;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.imageio.ImageIO;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -30,13 +37,18 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
 public class ClientController implements Runnable{
-	
+	//drawer code here references http://java-buddy.blogspot.co.nz/2013/04/free-draw-on-javafx-canvas.html	
 
     ObservableList<String> m_names = FXCollections.observableArrayList();	
         
@@ -44,9 +56,15 @@ public class ClientController implements Runnable{
 	Socket socket;
 	DataInputStream dis;
 	DataOutputStream dos;
+    OutputStream outputStream;
+    InputStream inputStream;
+    
+	private Background selectedBackground =new Background(new BackgroundFill(Color.web("#ffba00"), CornerRadii.EMPTY, Insets.EMPTY));
+	private Background selectedColourBackground =new Background(new BackgroundFill(Color.web("#008a91"), CornerRadii.EMPTY, Insets.EMPTY));
 	
     private ImageView selectedTool;
-    
+    private ImageView selectedColour;
+
     public String nick;
 
     @FXML
@@ -63,9 +81,26 @@ public class ClientController implements Runnable{
         
     //painter icons
     @FXML
-    private ImageView img1_0;
+    private Pane pane0_0;
+    @FXML
+    private ImageView img0_0;
+    @FXML
+    private Pane pane0_11;
+    @FXML
+    private ImageView img0_11;
+    @FXML
+    private Pane pane1_11;
+    @FXML
+    private ImageView img1_11;
+    
+    
+    
     URL pencilUrl = this.getClass().getClassLoader().getResource("pencil.png");
     Image pencil = new Image("pencil.png");
+    URL blackUrl = this.getClass().getClassLoader().getResource("black.png");
+    Image black = new Image("black.png");
+    URL whiteUrl = this.getClass().getClassLoader().getResource("white.png");
+    Image white = new Image("white.png");
     
     
 	public void initialize(){
@@ -78,10 +113,18 @@ public class ClientController implements Runnable{
  
             @Override
             public void handle(MouseEvent event) {
-                graphicsContext.beginPath();
-                graphicsContext.moveTo(event.getX(), event.getY());
-                graphicsContext.stroke();
+            	
+            	
+            	
+                if (selectedTool == img0_0) {
+					graphicsContext.beginPath();
+					graphicsContext.moveTo(event.getX(), event.getY());
+					graphicsContext.stroke();
+				}
+                
+                
             }
+            
         });
          
         canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, 
@@ -89,8 +132,12 @@ public class ClientController implements Runnable{
  
             @Override
             public void handle(MouseEvent event) {
+            	
+                if (selectedTool == img0_0) {
                 graphicsContext.lineTo(event.getX(), event.getY());
                 graphicsContext.stroke();
+                }
+                
             }
         });
  
@@ -99,12 +146,15 @@ public class ClientController implements Runnable{
  
             @Override
             public void handle(MouseEvent event) {
+            	sendDraw(graphicsContext);
  
             }
         });
 
 		
-		img1_0.setImage(pencil);
+        img0_0.setImage(pencil);
+        img0_11.setImage(black);
+        img1_11.setImage(white);
 		
 	    m_names.add(getNick());
         userList.setItems(m_names);
@@ -195,6 +245,45 @@ public class ClientController implements Runnable{
     	chatField.setText(null);
 
     }
+	
+	public void sendDraw(GraphicsContext gc){
+		
+		try {
+			dos.writeInt(ServerConstants.DRAW_IMAGE); // determine the type of message to be sent
+//			 try {
+			
+			//first write the image to disk
+                 WritableImage writableImage = new WritableImage((int)canvas.getWidth(), (int)canvas.getHeight());
+                 File file = new File("temp.png");
+                 canvas.snapshot(null, writableImage);
+                 try {
+                     ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", file);
+                     System.out.println(file.toString());
+                 } catch (IOException ex) {
+                     Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
+                 }
+                 
+                 
+                 BufferedImage bImage = ImageIO.read(new File("temp.png"));
+                 ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+                 ImageIO.write( SwingFXUtils.fromFXImage( writableImage, null ), "png", byteOutput );
+                 byte[] size = ByteBuffer.allocate(4).putInt(byteOutput.size()).array();
+                 
+                 
+                 outputStream.write(size);
+                 outputStream.write(byteOutput.toByteArray());
+                 outputStream.flush();
+                 
+                 
+//             } catch (IOException ex) {
+//                 Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
+//             }
+			dos.flush(); // force the message to be sent (sometimes data can be buffered)
+		}
+		catch (IOException e){
+			e.printStackTrace();
+		}
+	}
 
 	 public String getNick(){
 
@@ -207,7 +296,7 @@ public class ClientController implements Runnable{
 
 	    	// Set the button types.
 	    	ButtonType loginButtonType = new ButtonType("Login", ButtonData.OK_DONE);
-	    	dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+	    	dialog.getDialogPane().getButtonTypes().add(loginButtonType);
 
 	    	// Create the username and password labels and fields.
 	    	GridPane grid = new GridPane();
@@ -225,6 +314,7 @@ public class ClientController implements Runnable{
 	    	Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
 	    	loginButton.setDisable(true);
 
+
 	    	// Do some validation (using the Java 8 lambda syntax).
 	    	username.textProperty().addListener((observable, oldValue, newValue) -> {
 	    	    loginButton.setDisable(newValue.trim().isEmpty());
@@ -235,9 +325,7 @@ public class ClientController implements Runnable{
 	    	// Request focus on the username field by default.
 	    	Platform.runLater(() -> username.requestFocus());
 
-
-
-	    	Optional<String> result = dialog.showAndWait();
+	    	dialog.showAndWait();
 	    	
 	    	nick = username.textProperty().get().toString();
 	    	
@@ -249,12 +337,7 @@ public class ClientController implements Runnable{
 	    	
 	        double canvasWidth = gc.getCanvas().getWidth();
 	        double canvasHeight = gc.getCanvas().getHeight();
-	         
-/*	        gc.setFill(Color.LIGHTGRAY);
-	        gc.setStroke(Color.BLACK);
-	        gc.setLineWidth(5);*/
-	 
-	        gc.fill();
+
 	        gc.strokeRect(
 	                0,              //x of the upper left corner
 	                0,              //y of the upper left corner
@@ -267,10 +350,29 @@ public class ClientController implements Runnable{
 	         
 	    }
 	    
-/*	    private void selectTool(ImageView tool){
-	    	if (tool == img1_0){
-	    		selectedTool = img1_0;
-	    	}
-	    }*/
+	    @FXML
+	    private void selectPencil(){
+	    	System.out.println("pencil tool selected");
+	    		selectedTool = img0_0;
+	    		pane0_0.setBackground(selectedBackground);
+	    }
+	    
+	    @FXML
+	    private void selectBlack(){
+	    	System.out.println("black colour selected");
+	    	selectedColour = img0_11;
+	    		pane0_11.setBackground(selectedColourBackground);
+//		        gc.setFill(Color.BLACK);
+//		        gc.setStroke(Color.BLACK);
+	    }
+	    
+	    @FXML
+	    private void selectWhite(){
+	    	System.out.println("white colour selected");
+	    	selectedColour = img1_11;
+	    		pane1_11.setBackground(selectedColourBackground);
+//		        gc.setFill(Color.BLACK);
+//		        gc.setStroke(Color.BLACK);
+	    }
 
 }
