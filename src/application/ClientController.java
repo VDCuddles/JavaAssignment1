@@ -1,22 +1,14 @@
 package application;
 
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
@@ -40,7 +32,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
@@ -69,7 +60,6 @@ public class ClientController implements Runnable{
 	private Background selectedColourBackground =new Background(new BackgroundFill(Color.web("#008a91"), CornerRadii.EMPTY, Insets.EMPTY));
 	
     private ImageView selectedTool;
-    private ImageView selectedColour;
     
     public String nick;
 
@@ -518,11 +508,11 @@ public class ClientController implements Runnable{
 		                ex.printStackTrace();
 					}
 					break;
-//					case ServerConstants.DRAW_BROADCAST:
-//		            try {
+					case ServerConstants.DRAW_BROADCAST:
+		            try {
 //			                ByteArrayInputStream byteInput= new ByteArrayInputStream(null);
 //			                byte[] size = ByteBuffer.allocate(4).putInt(inputStream.available()).array();
-
+//
 //			            	byteInput.read(size);
 //			                otherClient.getOutputStream() = byteOutput;
 //			                socket.getInputStream().read();//(byteOutput.toByteArray());	
@@ -534,15 +524,15 @@ public class ClientController implements Runnable{
 //				                ex.printStackTrace();
 //							}
 //						
-		            	
-		            	
-//		            	BufferedImage image = ImageIO.read(inputStream);
-//		            	canvas.getGraphicsContext2D().drawImage(SwingFXUtils.toFXImage(image,null), (double)image.getWidth(), (double)image.getHeight());
-//		            	}
-//			             catch (IOException ex) {
-//			                ex.printStackTrace();
-//			            }
-//					break;
+//		            	
+//		            	
+		            	BufferedImage image = ImageIO.read(dis);
+		            	canvas.getGraphicsContext2D().drawImage(SwingFXUtils.toFXImage(image,null), (double)image.getWidth(), (double)image.getHeight());
+		            	}
+			             catch (IOException ex) {
+			                ex.printStackTrace();
+			            }
+					break;
 				}
 			}
 			catch (IOException e)
@@ -577,43 +567,28 @@ public class ClientController implements Runnable{
 	
 	public void sendDraw(GraphicsContext gc){
 		
-//		try {
-//			dos.writeInt(ServerConstants.DRAW_IMAGE); // determine the type of message to be sent
-////			 try {
-//			
-//			//first write the image to disk
-//                 WritableImage writableImage = new WritableImage((int)canvas.getWidth(), (int)canvas.getHeight());
-////                 File file = new File("temp.png");
-//                 canvas.snapshot(null, writableImage);
-////                 try {
-////         	          ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", file);
-////                 } catch (IOException ex) {
-////                     Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
-////                 }
-//                 
+		try {
+//			 try {
+			
+			//first write the image to disk
+                 WritableImage writableImage = new WritableImage((int)canvas.getWidth(), (int)canvas.getHeight());
+                 canvas.snapshot(null, writableImage);
+                 
+//                 File file = new File("temp.png");
+//                 try {
+//         	          ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", file);
+//                 } catch (IOException ex) {
+//                     Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
+//                 }
 //                 BufferedImage bImage = ImageIO.read(new File("temp.png"));
-//                 ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-//                 try {
-//                     ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", byteOutput);
-//                 } catch (IOException ex) {
-//                     Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
-//                 }
-//                 byte[] size = ByteBuffer.allocate(4).putInt(byteOutput.size()).array();
-//
-//                 try {
-//                	 outputStream = byteOutput;
-//                     outputStream.write(size);
-//                     outputStream.write(byteOutput.toByteArray());
-//                     outputStream.flush();
-//                 } catch (IOException ex) {
-//                     Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
-//                 }
-//                 
-//			dos.flush(); // force the message to be sent (sometimes data can be buffered)
-//		}
-//		catch (IOException e){
-//			e.printStackTrace();
-//		}
+                   ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", dos);
+				   dos.writeInt(ServerConstants.DRAW_IMAGE); // determine the type of message to be sentz
+                   dos.flush(); // force the message to be sent (sometimes data can be buffered)
+                   
+		}
+		catch (IOException e){
+			e.printStackTrace();
+		}
 	}
 
 	 private String getNick(){

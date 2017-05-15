@@ -78,29 +78,27 @@ public class ServerThread extends Thread {
 						
 						break;
 						
-//					case ServerConstants.DRAW_IMAGE:
-//				        InputStream inputStream = remoteClient.getInputStream();
-//						System.err.println(inputStream);
-//						
-//						server.getSystemLog().appendText(remoteClient.getInetAddress()+": (image data sent)\n");
-//						
-//						for(ServerThread otherClient: connectedClients)
-//						{
-//							if(!otherClient.equals(this)) // don't send the message to the client that sent the message in the first place
-//							{
-//								
-//							    otherClient.getDos().writeInt(ServerConstants.DRAW_BROADCAST);
-//
-//				                ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-//				                byte[] size = ByteBuffer.allocate(4).putInt(byteOutput.size()).array();
-//				                byteOutput.write(size);
-//				                otherClient.getOutputStream() = byteOutput;
-//				                otherClient.getOutputStream().write(size);			                 
-//				                otherClient.getOutputStream().write(byteOutput.toByteArray());			                 
-//							}
-//						}
-//
-//						break;
+					case ServerConstants.DRAW_IMAGE:
+				        InputStream inputStream = remoteClient.getInputStream();
+						System.err.println(inputStream);
+						
+						server.getSystemLog().appendText(remoteClient.getInetAddress()+": (image data sent)\n");
+						
+						for(ServerThread otherClient: connectedClients)
+						{
+							if(!otherClient.equals(this)) // don't send the message to the client that sent the message in the first place
+							{
+								
+							    otherClient.getDos().writeInt(ServerConstants.DRAW_BROADCAST);
+
+				                ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+				                byte[] size = ByteBuffer.allocate(4).putInt(byteOutput.size()).array();
+				                otherClient.getDos().write(size);			                 
+				                otherClient.getDos().write(byteOutput.toByteArray());			                 
+							}
+						}
+
+						break;
 						
 					case ServerConstants.REGISTER_CLIENT:
 						
