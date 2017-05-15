@@ -55,7 +55,6 @@ import javafx.stage.FileChooser;
 
 public class ClientController implements Runnable{
 	//drawer code here references http://java-buddy.blogspot.co.nz/2013/04/free-draw-on-javafx-canvas.html	
-
     ObservableList<String> m_names = FXCollections.observableArrayList();	
     Pane[] colourPaneList;
     
@@ -63,8 +62,8 @@ public class ClientController implements Runnable{
 	Socket socket;
 	DataInputStream dis;
 	DataOutputStream dos;
-    OutputStream outputStream;
-    InputStream inputStream;
+//    OutputStream outputStream;
+//    InputStream inputStream;
     
 	private Background selectedBackground =new Background(new BackgroundFill(Color.web("#ffba00"), CornerRadii.EMPTY, Insets.EMPTY));
 	private Background selectedColourBackground =new Background(new BackgroundFill(Color.web("#008a91"), CornerRadii.EMPTY, Insets.EMPTY));
@@ -187,7 +186,7 @@ public class ClientController implements Runnable{
 	    
 		selectPencil();
 		selectColour(graphicsContext, 1);
-	    
+				
 	    //canvas event handlers
 	    
 	    canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, 
@@ -195,8 +194,6 @@ public class ClientController implements Runnable{
  
             @Override
             public void handle(MouseEvent event) {
-            	
-            	
             	
                 if (selectedTool == img0_0) {
 					graphicsContext.beginPath();
@@ -467,8 +464,8 @@ public class ClientController implements Runnable{
 				socket = new Socket("localhost", 5000);
 				dis = new DataInputStream(socket.getInputStream());
 				dos = new DataOutputStream(socket.getOutputStream());
-				inputStream = socket.getInputStream();
-				outputStream = socket.getOutputStream();
+//				inputStream = socket.getInputStream();
+//				outputStream = socket.getOutputStream();
 				
 				// define a thread to take care of messages sent from the server
 				Thread socketThread = new Thread(this);
@@ -521,18 +518,31 @@ public class ClientController implements Runnable{
 		                ex.printStackTrace();
 					}
 					break;
-					case ServerConstants.DRAW_BROADCAST:
-			            try {
-			            	InputStream resourceBuff = inputStream;
-			                BufferedImage image = ImageIO.read(resourceBuff);
-			                System.out.println("image = " + image.toString());
-//			                Graphics2D g2 = image.createGraphics();
-			                canvas.getGraphicsContext2D().drawImage(SwingFXUtils.toFXImage(image,null), (double)image.getWidth(), (double)image.getHeight());
+//					case ServerConstants.DRAW_BROADCAST:
+//		            try {
+//			                ByteArrayInputStream byteInput= new ByteArrayInputStream(null);
+//			                byte[] size = ByteBuffer.allocate(4).putInt(inputStream.available()).array();
 
-			                
-			            } catch (IOException ex) {
-			                ex.printStackTrace();
-			            }
+//			            	byteInput.read(size);
+//			                otherClient.getOutputStream() = byteOutput;
+//			                socket.getInputStream().read();//(byteOutput.toByteArray());	
+//			                try {
+//								System.out.println("image = " + SwingFXUtils.toFXImage(image,null).getHeight());
+//								System.out.println("image = " + SwingFXUtils.toFXImage(image,null).getWidth());
+//								System.out.println("image = " + SwingFXUtils.toFXImage(image,null).toString());
+//							} catch (Exception ex) {
+//				                ex.printStackTrace();
+//							}
+//						
+		            	
+		            	
+//		            	BufferedImage image = ImageIO.read(inputStream);
+//		            	canvas.getGraphicsContext2D().drawImage(SwingFXUtils.toFXImage(image,null), (double)image.getWidth(), (double)image.getHeight());
+//		            	}
+//			             catch (IOException ex) {
+//			                ex.printStackTrace();
+//			            }
+//					break;
 				}
 			}
 			catch (IOException e)
@@ -567,38 +577,43 @@ public class ClientController implements Runnable{
 	
 	public void sendDraw(GraphicsContext gc){
 		
-		try {
-			dos.writeInt(ServerConstants.DRAW_IMAGE); // determine the type of message to be sent
-//			 try {
-			
-			//first write the image to disk
-                 WritableImage writableImage = new WritableImage((int)canvas.getWidth(), (int)canvas.getHeight());
-                 File file = new File("temp.png");
-                 canvas.snapshot(null, writableImage);
-                 try {
-                     ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", file);
-                 } catch (IOException ex) {
-                     Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
-                 }
-                 
-                 BufferedImage bImage = ImageIO.read(new File("temp.png"));
-                 ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-                 byte[] size = ByteBuffer.allocate(4).putInt(byteOutput.size()).array();
-
-                 try {
-                	 outputStream = byteOutput;
-                     outputStream.write(size);
-                     outputStream.write(byteOutput.toByteArray());
-                     outputStream.flush();
-                 } catch (IOException ex) {
-                     Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
-                 }
-                 
-			dos.flush(); // force the message to be sent (sometimes data can be buffered)
-		}
-		catch (IOException e){
-			e.printStackTrace();
-		}
+//		try {
+//			dos.writeInt(ServerConstants.DRAW_IMAGE); // determine the type of message to be sent
+////			 try {
+//			
+//			//first write the image to disk
+//                 WritableImage writableImage = new WritableImage((int)canvas.getWidth(), (int)canvas.getHeight());
+////                 File file = new File("temp.png");
+//                 canvas.snapshot(null, writableImage);
+////                 try {
+////         	          ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", file);
+////                 } catch (IOException ex) {
+////                     Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
+////                 }
+//                 
+//                 BufferedImage bImage = ImageIO.read(new File("temp.png"));
+//                 ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+//                 try {
+//                     ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", byteOutput);
+//                 } catch (IOException ex) {
+//                     Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
+//                 }
+//                 byte[] size = ByteBuffer.allocate(4).putInt(byteOutput.size()).array();
+//
+//                 try {
+//                	 outputStream = byteOutput;
+//                     outputStream.write(size);
+//                     outputStream.write(byteOutput.toByteArray());
+//                     outputStream.flush();
+//                 } catch (IOException ex) {
+//                     Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
+//                 }
+//                 
+//			dos.flush(); // force the message to be sent (sometimes data can be buffered)
+//		}
+//		catch (IOException e){
+//			e.printStackTrace();
+//		}
 	}
 
 	 private String getNick(){

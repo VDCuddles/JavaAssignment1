@@ -20,8 +20,8 @@ public class ServerThread extends Thread {
 
 	DataInputStream dis;
 	DataOutputStream dos;
-	OutputStream outputStream;
-	InputStream inputStream;
+//	OutputStream outputStream;
+//	InputStream inputStream;
 	
 	Socket remoteClient;
 	ServerController server;
@@ -37,8 +37,8 @@ public class ServerThread extends Thread {
 		try {
 			this.dis = new DataInputStream(remoteClient.getInputStream());
 			this.dos = new DataOutputStream(remoteClient.getOutputStream());
-			this.inputStream = remoteClient.getInputStream();
-			this.outputStream = remoteClient.getOutputStream();
+//			this.inputStream = remoteClient.getInputStream();
+//			this.outputStream = remoteClient.getOutputStream();
 //			this.bainputStream = new ByteArrayInputStream(remoteClient.getInputStream());
 //			this.baoutputStream = new ByteArrayOutputStream(remoteClient.getOutputStream());
 			this.server = server;
@@ -78,29 +78,29 @@ public class ServerThread extends Thread {
 						
 						break;
 						
-					case ServerConstants.DRAW_IMAGE:
-				        InputStream inputStream = remoteClient.getInputStream();
-						System.err.println(inputStream);
-						
-						server.getSystemLog().appendText(remoteClient.getInetAddress()+": (image data sent)");
-						
-						for(ServerThread otherClient: connectedClients)
-						{
-							if(!otherClient.equals(this)) // don't send the message to the client that sent the message in the first place
-							{
-								
-							    otherClient.getDos().writeInt(ServerConstants.DRAW_BROADCAST);
-
-				                ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-				                byte[] size = ByteBuffer.allocate(4).putInt(byteOutput.size()).array();
+//					case ServerConstants.DRAW_IMAGE:
+//				        InputStream inputStream = remoteClient.getInputStream();
+//						System.err.println(inputStream);
+//						
+//						server.getSystemLog().appendText(remoteClient.getInetAddress()+": (image data sent)\n");
+//						
+//						for(ServerThread otherClient: connectedClients)
+//						{
+//							if(!otherClient.equals(this)) // don't send the message to the client that sent the message in the first place
+//							{
+//								
+//							    otherClient.getDos().writeInt(ServerConstants.DRAW_BROADCAST);
+//
+//				                ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+//				                byte[] size = ByteBuffer.allocate(4).putInt(byteOutput.size()).array();
 //				                byteOutput.write(size);
 //				                otherClient.getOutputStream() = byteOutput;
-				                otherClient.getOutputStream().write(size);			                 
-				                otherClient.getOutputStream().write(byteOutput.toByteArray());			                 
-							}
-						}
-
-						break;
+//				                otherClient.getOutputStream().write(size);			                 
+//				                otherClient.getOutputStream().write(byteOutput.toByteArray());			                 
+//							}
+//						}
+//
+//						break;
 						
 					case ServerConstants.REGISTER_CLIENT:
 						
@@ -169,9 +169,9 @@ public class ServerThread extends Thread {
 		return dos;
 	}
 	
-	public OutputStream getOutputStream() {
-		
-		return outputStream;
-	}
+//	public OutputStream getOutputStream() {
+//		
+//		return outputStream;
+//	}
 
 }
