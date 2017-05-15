@@ -6,6 +6,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -24,6 +26,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ButtonType;
@@ -42,19 +45,22 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 
 public class ClientController implements Runnable{
 	//drawer code here references http://java-buddy.blogspot.co.nz/2013/04/free-draw-on-javafx-canvas.html	
     ObservableList<String> m_names = FXCollections.observableArrayList();	
     Pane[] colourPaneList;
+    Pane[] toolPaneList;
     
 	// define the socket and io streams
 	Socket socket;
 	DataInputStream dis;
 	DataOutputStream dos;
-//    OutputStream outputStream;
-//    InputStream inputStream;
+    OutputStream outputStream;
+    InputStream inputStream;
     
 	private Background selectedBackground =new Background(new BackgroundFill(Color.web("#ffba00"), CornerRadii.EMPTY, Insets.EMPTY));
 	private Background selectedColourBackground =new Background(new BackgroundFill(Color.web("#008a91"), CornerRadii.EMPTY, Insets.EMPTY));
@@ -84,6 +90,14 @@ public class ClientController implements Runnable{
     private Pane pane1_0;
     @FXML
     private ImageView img1_0;
+    @FXML
+    private Pane pane0_1;
+    @FXML
+    private ImageView img0_1;
+    @FXML
+    private Pane pane1_1;
+    @FXML
+    private ImageView img1_1;
     @FXML
     private Pane pane0_2;
     @FXML
@@ -170,6 +184,7 @@ public class ClientController implements Runnable{
 		colourPaneList = new Pane[]{pane0_2,pane1_2,pane0_3,pane1_3,pane0_4,pane1_4,pane0_5,pane1_5,
 				pane0_6,pane1_6,pane0_7,pane1_7,pane0_8,pane1_8,pane0_9,pane1_9,
 				pane0_10,pane1_10,pane0_11,pane1_11};
+		toolPaneList = new Pane[]{pane0_0,pane0_1}; 
 		
 	    final GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
 	    initDraw(graphicsContext);
@@ -220,6 +235,18 @@ public class ClientController implements Runnable{
             }
         });
         
+        canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, 
+                new EventHandler<MouseEvent>(){
+ 
+            @Override
+            public void handle(MouseEvent event) {
+                if (selectedTool == img0_1) {
+                	Canvas can = new Canvas();
+//                	can.set
+                }
+            }
+        });
+        
         //tool handlers
         img0_0.addEventHandler(MouseEvent.MOUSE_CLICKED, 
                 new EventHandler<MouseEvent>(){
@@ -230,24 +257,24 @@ public class ClientController implements Runnable{
             }
         });
         
-//        img0_1.addEventHandler(MouseEvent.MOUSE_CLICKED, 
-//        	      new EventHandler<MouseEvent>(){
-//
-//        	  @Override
-//        	  public void handle(MouseEvent event) {
-//        	  	selectColour(graphicsContext, 1);
-//
-//        	  }
-//        	});
-//        img1_1.addEventHandler(MouseEvent.MOUSE_CLICKED, 
-//        	      new EventHandler<MouseEvent>(){
-//
-//        	  @Override
-//        	  public void handle(MouseEvent event) {
-//        	  	selectColour(graphicsContext, 2);
-//
-//        	  }
-//        	});
+        img0_1.addEventHandler(MouseEvent.MOUSE_CLICKED, 
+        	      new EventHandler<MouseEvent>(){
+
+        	  @Override
+        	  public void handle(MouseEvent event) {
+        	  	selectZoom(graphicsContext, canvas);
+
+        	  }
+        	});
+        img1_1.addEventHandler(MouseEvent.MOUSE_CLICKED, 
+        	      new EventHandler<MouseEvent>(){
+
+        	  @Override
+        	  public void handle(MouseEvent event) {
+        	  	rotate(graphicsContext, canvas);
+
+        	  }
+        	});
         
         //save handler
         img1_0.addEventHandler(MouseEvent.MOUSE_CLICKED, 
@@ -454,8 +481,8 @@ public class ClientController implements Runnable{
 				socket = new Socket("localhost", 5000);
 				dis = new DataInputStream(socket.getInputStream());
 				dos = new DataOutputStream(socket.getOutputStream());
-//				inputStream = socket.getInputStream();
-//				outputStream = socket.getOutputStream();
+				inputStream = socket.getInputStream();
+				outputStream = socket.getOutputStream();
 				
 				// define a thread to take care of messages sent from the server
 				Thread socketThread = new Thread(this);
@@ -665,6 +692,15 @@ public class ClientController implements Runnable{
 	    	}
 	    }
 	    
+	    private void setBackgroundForTool(Pane aPane){
+	    	for (Pane pane : toolPaneList){
+	    		if (pane == aPane) {
+	    			pane.setBackground(selectedBackground);
+				}
+	    		else pane.setBackground(null);
+	    	}
+	    }
+	    
 	    @FXML
 	    private void saveImage(GraphicsContext gc){
 	    	
@@ -694,7 +730,24 @@ public class ClientController implements Runnable{
 	    private void selectPencil(){
 	    	System.out.println("pencil tool selected");
 	    		selectedTool = img0_0;
-	    		pane0_0.setBackground(selectedBackground);
+		    	setBackgroundForTool(pane0_0);
+	    }
+
+	    private void selectZoom(GraphicsContext gc, Canvas can){
+	    	System.out.println("zoom tool selected");
+    		selectedTool = img0_1;
+	    	setBackgroundForTool(pane0_1);
+	    	can.setScaleX(2);
+	    	can.setScaleY(2);
+
+	    }
+
+	    private void rotate(GraphicsContext gc, Canvas can){
+            try {
+            	can.setRotate(can.getRotate() + 90);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 	    }
 	    
 	    private void selectColour(GraphicsContext gc, int iv){

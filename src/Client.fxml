@@ -82,7 +82,10 @@
                   </Pane>
                   <Pane fx:id="pane0_1" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
                      <children>
-                        <ImageView fx:id="img0_1" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                        <ImageView fx:id="img0_1" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@resources/zoom.png" />
+                           </image></ImageView>
                      </children>
                   </Pane>
                   <Pane fx:id="pane1_10" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="10">
@@ -247,7 +250,10 @@
                   </Pane>
                   <Pane fx:id="pane1_1" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <children>
-                        <ImageView fx:id="img1_1" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" />
+                        <ImageView fx:id="img1_1" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@resources/rotate.png" />
+                           </image></ImageView>
                      </children>
                   </Pane>
                </children>
@@ -259,6 +265,10 @@
       </Pane>
    </left>
    <center>
-      <Canvas fx:id="canvas" height="507.0" width="459.0" BorderPane.alignment="CENTER" />
+      <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <Canvas fx:id="canvas" height="463.0" translateY="60.0" width="463.0" />
+         </children>
+      </Pane>
    </center>
 </BorderPane>

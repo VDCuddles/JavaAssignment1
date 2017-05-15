@@ -20,8 +20,8 @@ public class ServerThread extends Thread {
 
 	DataInputStream dis;
 	DataOutputStream dos;
-//	OutputStream outputStream;
-//	InputStream inputStream;
+	OutputStream outputStream;
+	InputStream inputStream;
 	
 	Socket remoteClient;
 	ServerController server;
@@ -37,10 +37,8 @@ public class ServerThread extends Thread {
 		try {
 			this.dis = new DataInputStream(remoteClient.getInputStream());
 			this.dos = new DataOutputStream(remoteClient.getOutputStream());
-//			this.inputStream = remoteClient.getInputStream();
-//			this.outputStream = remoteClient.getOutputStream();
-//			this.bainputStream = new ByteArrayInputStream(remoteClient.getInputStream());
-//			this.baoutputStream = new ByteArrayOutputStream(remoteClient.getOutputStream());
+			this.inputStream = remoteClient.getInputStream();
+			this.outputStream = remoteClient.getOutputStream();
 			this.server = server;
 		}
 		catch (IOException e)
@@ -167,9 +165,9 @@ public class ServerThread extends Thread {
 		return dos;
 	}
 	
-//	public OutputStream getOutputStream() {
-//		
-//		return outputStream;
-//	}
+	public OutputStream getOutputStream() {
+		
+		return outputStream;
+	}
 
 }
