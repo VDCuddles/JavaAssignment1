@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -62,6 +63,17 @@ public class ClientController implements Runnable{
 	DataOutputStream dos;
     OutputStream outputStream;
     InputStream inputStream;
+
+    
+    double sx;
+    double sy;
+    double ex;
+    double ey;
+    SVGPath svg = new SVGPath();
+    String sendPath = "";
+    String newPath = "";
+	String oldPath;
+
     
 	private Background selectedBackground =new Background(new BackgroundFill(Color.web("#ffba00"), CornerRadii.EMPTY, Insets.EMPTY));
 	private Background selectedColourBackground =new Background(new BackgroundFill(Color.web("#008a91"), CornerRadii.EMPTY, Insets.EMPTY));
@@ -179,11 +191,6 @@ public class ClientController implements Runnable{
     private Pane pane1_11;
     @FXML
     private ImageView img1_11;
-    double sx;
-    double sy;
-    double ex;
-    double ey;
-    SVGPath svg = new SVGPath();
 
 	public void initialize(){
 		
@@ -193,7 +200,6 @@ public class ClientController implements Runnable{
 		toolPaneList = new Pane[]{pane0_0,pane0_1}; 
 		
 	    final GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
-
 	    initDraw(graphicsContext);
 	    
 		selectPencil();
@@ -212,8 +218,9 @@ public class ClientController implements Runnable{
 //					graphicsContext.moveTo(event.getX(), event.getY());
 //					graphicsContext.stroke();
 			        SVGPath path = new SVGPath();
-			        path.setContent("M"+(float)event.getX()+","+(float)event.getY());
+			        path.setContent("M "+(int)event.getX()+","+(int)event.getY());
 			        graphicsContext.appendSVGPath(path.getContent());
+			        sendPath += path.getContent();
 					sx = event.getX();
 					sy = event.getY();
 				}
@@ -236,8 +243,10 @@ public class ClientController implements Runnable{
 				ex = event.getX();
 				ey = event.getY();
 				svg = drawSVG(sx,sy,ex,ey,graphicsContext);
-				System.out.println(svg.toString());
+//				System.out.println(svg.toString());
             	graphicsContext.appendSVGPath(svg.getContent());
+		        sendPath += svg.getContent();
+
 //				graphicsContext.fill();
                 if(sx != event.getX() || sy != event.getY()){
                 	sx = event.getX();
@@ -259,7 +268,7 @@ public class ClientController implements Runnable{
  
             @Override
             public void handle(MouseEvent event) {
-            	sendDraw(graphicsContext);
+            	sendDraw();
 				graphicsContext.stroke();
 
             }
@@ -531,6 +540,24 @@ public class ClientController implements Runnable{
 		}
 		
 		System.out.println(socket.toString());
+		
+		java.util.Timer t = new java.util.Timer();
+		t.schedule(new TimerTask() {
+
+		            @Override
+		            public void run() {
+//		                System.out.println("This will run every 100ms");
+//						checkPaths();
+		            	if (oldPath != newPath){
+		            		graphicsContext.beginPath();
+		            		graphicsContext.appendSVGPath(newPath);
+		            		graphicsContext.stroke();
+		            		oldPath = newPath;
+		            		
+		            		
+		            	}
+		            }
+		        }, 100, 100);
 
 
 	}
@@ -583,8 +610,16 @@ public class ClientController implements Runnable{
 //						
 //		            	
 //		            	
-		            	BufferedImage image = ImageIO.read(inputStream);
-		            	canvas.getGraphicsContext2D().drawImage(SwingFXUtils.toFXImage(image,null), (double)image.getWidth(), (double)image.getHeight());
+//		            	BufferedImage image = ImageIO.read(inputStream);
+//		            	canvas.getGraphicsContext2D().drawImage(SwingFXUtils.toFXImage(image,null), (double)image.getWidth(), (double)image.getHeight());
+		            	System.out.println(dis.readUTF());
+		            	newPath = dis.readUTF();
+//		    	        SVGPath svg = new SVGPath();
+//		    	        svg.setContent(sendPath);
+//		    	    	graphicsContext.beginPath();
+//		    	    	graphicsContext.appendSVGPath(svg.getContent());
+//		    	    	graphicsContext.stroke();
+		    	    	
 		            	}
 			             catch (IOException ex) {
 			                ex.printStackTrace();
@@ -622,7 +657,18 @@ public class ClientController implements Runnable{
 
     }
 	
-	public void sendDraw(GraphicsContext gc){
+	public void sendDraw(){
+		try {
+			dos.writeInt(ServerConstants.DRAW_IMAGE); // determine the type of message to be sent
+			dos.writeUTF(sendPath); // message payload
+			
+			dos.flush(); // force the message to be sent (sometimes data can be buffered)
+	    	sendPath = "";
+		}
+		catch (IOException e){
+			e.printStackTrace();
+		}
+		
 		
 //		try {
 ////			 try {
@@ -647,6 +693,7 @@ public class ClientController implements Runnable{
 //		catch (IOException e){
 //			e.printStackTrace();
 //		}
+
 	 }
 
 	 private String getNick(){
@@ -930,11 +977,20 @@ public class ClientController implements Runnable{
 	    public static SVGPath drawSVG(double startX, double startY, double endX, double endY, GraphicsContext gc)
 	    {
 	        SVGPath path = new SVGPath();
-	        path.setContent("L"+(float)startX+","+(float)startY+" L "+(float)endX+","+(float)endY);
+	        path.setContent(" L "+(int)startX+","+(int)startY+" L "+(int)endX+","+(int)endY+" ");
 	        path.setFill(gc.getFill());
 	        path.setStroke(gc.getStroke());
 	        path.setStrokeWidth(3);
 	        return path;    
 	    }
+	    
+//	    public void renderFromStream(GraphicsContext gc, String path){
+//	        SVGPath svg = new SVGPath();
+//	        svg.setContent(path);
+//	    	gc.beginPath();
+//	    	gc.appendSVGPath(svg.getContent());
+//	    	gc.stroke();
+//	    }
+	    
 
 }

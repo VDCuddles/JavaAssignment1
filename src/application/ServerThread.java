@@ -55,7 +55,7 @@ public class ServerThread extends Thread {
 			try {
 				int mesgType = dis.readInt(); // read the type of message from the client (must be an integer)
 				System.err.println(mesgType);
-				
+
 				// decode the message type based on the integer sent from the client
 				switch(mesgType)
 				{
@@ -79,18 +79,21 @@ public class ServerThread extends Thread {
 						
 					case ServerConstants.DRAW_IMAGE:
 						server.getSystemLog().appendText(remoteClient.getInetAddress()+": (image data sent)\n");
-						
+						String data2 = dis.readUTF();
+//						System.err.println(data2);
 						for(ServerThread otherClient: connectedClients)
 						{
 							if(!otherClient.equals(this)) // don't send the message to the client that sent the message in the first place
 							{
 								
+//							    otherClient.getDos().writeInt(ServerConstants.DRAW_BROADCAST);
+//
+//				                ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+//				                byte[] size = ByteBuffer.allocate(4).putInt(byteOutput.size()).array();
+//				                otherClient.getOutputStream().write(size);			                 
+//				                otherClient.getOutputStream().write(byteOutput.toByteArray());			      
 							    otherClient.getDos().writeInt(ServerConstants.DRAW_BROADCAST);
-
-				                ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-				                byte[] size = ByteBuffer.allocate(4).putInt(byteOutput.size()).array();
-				                otherClient.getOutputStream().write(size);			                 
-				                otherClient.getOutputStream().write(byteOutput.toByteArray());			                 
+								otherClient.getDos().writeUTF(data2);
 							}
 						}
 

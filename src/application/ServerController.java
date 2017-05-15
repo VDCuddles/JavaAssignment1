@@ -71,7 +71,7 @@ public class ServerController {
 				ServerThread st = new ServerThread(remoteClient,this,connectedClients);
 				st.start();
 				connectedClients.add(st);
-				System.out.println("test");
+//				System.out.println("test");
 			/*}*/
 		}
 		catch (IOException e)
