@@ -45,6 +45,7 @@ public class ServerThread extends Thread {
 		{
 			e.printStackTrace();
 		}
+		
 	}
 
 	public void run()
@@ -77,9 +78,6 @@ public class ServerThread extends Thread {
 						break;
 						
 					case ServerConstants.DRAW_IMAGE:
-				        InputStream inputStream = remoteClient.getInputStream();
-						System.err.println(inputStream);
-						
 						server.getSystemLog().appendText(remoteClient.getInetAddress()+": (image data sent)\n");
 						
 						for(ServerThread otherClient: connectedClients)
@@ -91,8 +89,8 @@ public class ServerThread extends Thread {
 
 				                ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
 				                byte[] size = ByteBuffer.allocate(4).putInt(byteOutput.size()).array();
-				                otherClient.getDos().write(size);			                 
-				                otherClient.getDos().write(byteOutput.toByteArray());			                 
+				                otherClient.getOutputStream().write(size);			                 
+				                otherClient.getOutputStream().write(byteOutput.toByteArray());			                 
 							}
 						}
 

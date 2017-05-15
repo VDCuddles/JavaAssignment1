@@ -45,6 +45,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.SVGPath;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
@@ -178,7 +179,12 @@ public class ClientController implements Runnable{
     private Pane pane1_11;
     @FXML
     private ImageView img1_11;
-    
+    double sx;
+    double sy;
+    double ex;
+    double ey;
+    SVGPath svg = new SVGPath();
+
 	public void initialize(){
 		
 		colourPaneList = new Pane[]{pane0_2,pane1_2,pane0_3,pane1_3,pane0_4,pane1_4,pane0_5,pane1_5,
@@ -187,6 +193,7 @@ public class ClientController implements Runnable{
 		toolPaneList = new Pane[]{pane0_0,pane0_1}; 
 		
 	    final GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+
 	    initDraw(graphicsContext);
 	    
 		selectPencil();
@@ -202,8 +209,13 @@ public class ClientController implements Runnable{
             	
                 if (selectedTool == img0_0) {
 					graphicsContext.beginPath();
-					graphicsContext.moveTo(event.getX(), event.getY());
-					graphicsContext.stroke();
+//					graphicsContext.moveTo(event.getX(), event.getY());
+//					graphicsContext.stroke();
+			        SVGPath path = new SVGPath();
+			        path.setContent("M"+(float)event.getX()+","+(float)event.getY());
+			        graphicsContext.appendSVGPath(path.getContent());
+					sx = event.getX();
+					sy = event.getY();
 				}
                 
                 
@@ -218,8 +230,25 @@ public class ClientController implements Runnable{
             public void handle(MouseEvent event) {
             	
                 if (selectedTool == img0_0) {
-                graphicsContext.lineTo(event.getX(), event.getY());
-                graphicsContext.stroke();
+//                graphicsContext.lineTo(event.getX(), event.getY());
+//                graphicsContext.stroke();
+
+				ex = event.getX();
+				ey = event.getY();
+				svg = drawSVG(sx,sy,ex,ey,graphicsContext);
+				System.out.println(svg.toString());
+            	graphicsContext.appendSVGPath(svg.getContent());
+//				graphicsContext.fill();
+                if(sx != event.getX() || sy != event.getY()){
+                	sx = event.getX();
+                	sy = event.getY();
+                }
+                if(ex != event.getX() || ey != event.getY()){
+                	ex = event.getX();
+                	ey = event.getY();
+                }
+//                graphicsContext.closePath();
+
                 }
                 
             }
@@ -231,7 +260,8 @@ public class ClientController implements Runnable{
             @Override
             public void handle(MouseEvent event) {
             	sendDraw(graphicsContext);
- 
+				graphicsContext.stroke();
+
             }
         });
         
@@ -553,7 +583,7 @@ public class ClientController implements Runnable{
 //						
 //		            	
 //		            	
-		            	BufferedImage image = ImageIO.read(dis);
+		            	BufferedImage image = ImageIO.read(inputStream);
 		            	canvas.getGraphicsContext2D().drawImage(SwingFXUtils.toFXImage(image,null), (double)image.getWidth(), (double)image.getHeight());
 		            	}
 			             catch (IOException ex) {
@@ -594,29 +624,30 @@ public class ClientController implements Runnable{
 	
 	public void sendDraw(GraphicsContext gc){
 		
-		try {
-//			 try {
-			
-			//first write the image to disk
-                 WritableImage writableImage = new WritableImage((int)canvas.getWidth(), (int)canvas.getHeight());
-                 canvas.snapshot(null, writableImage);
-                 
-//                 File file = new File("temp.png");
-//                 try {
-//         	          ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", file);
-//                 } catch (IOException ex) {
-//                     Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
-//                 }
-//                 BufferedImage bImage = ImageIO.read(new File("temp.png"));
-				   dos.writeInt(ServerConstants.DRAW_IMAGE); // determine the type of message to be sent
-                   ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", dos);
-                   dos.flush(); // force the message to be sent (sometimes data can be buffered)
-                   
-		}
-		catch (IOException e){
-			e.printStackTrace();
-		}
-	}
+//		try {
+////			 try {
+//			
+//			//first write the image to disk
+//                 WritableImage writableImage = new WritableImage((int)canvas.getWidth(), (int)canvas.getHeight());
+//                 canvas.snapshot(null, writableImage);
+//                 
+////                 File file = new File("temp.png");
+////                 try {
+////         	          ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", file);
+////                 } catch (IOException ex) {
+////                     Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
+////                 }
+////                 BufferedImage bImage = ImageIO.read(new File("temp.png"));
+//				   dos.writeInt(ServerConstants.DRAW_IMAGE); // determine the type of message to be sent
+//                   ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", outputStream);
+//                   dos.flush(); // force the message to be sent (sometimes data can be buffered)
+//                   outputStream.flush();
+//                   
+//		}
+//		catch (IOException e){
+//			e.printStackTrace();
+//		}
+	 }
 
 	 private String getNick(){
 
@@ -894,6 +925,16 @@ public class ClientController implements Runnable{
 	        break;
 	        
 	    	}
+	    }
+	    
+	    public static SVGPath drawSVG(double startX, double startY, double endX, double endY, GraphicsContext gc)
+	    {
+	        SVGPath path = new SVGPath();
+	        path.setContent("L"+(float)startX+","+(float)startY+" L "+(float)endX+","+(float)endY);
+	        path.setFill(gc.getFill());
+	        path.setStroke(gc.getStroke());
+	        path.setStrokeWidth(3);
+	        return path;    
 	    }
 
 }
