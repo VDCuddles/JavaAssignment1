@@ -581,8 +581,8 @@ public class ClientController implements Runnable{
 //                     Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
 //                 }
 //                 BufferedImage bImage = ImageIO.read(new File("temp.png"));
+				   dos.writeInt(ServerConstants.DRAW_IMAGE); // determine the type of message to be sent
                    ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", dos);
-				   dos.writeInt(ServerConstants.DRAW_IMAGE); // determine the type of message to be sentz
                    dos.flush(); // force the message to be sent (sometimes data can be buffered)
                    
 		}
