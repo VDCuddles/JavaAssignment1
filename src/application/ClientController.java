@@ -553,7 +553,8 @@ public class ClientController implements Runnable{
 		            		graphicsContext.appendSVGPath(newPath);
 		            		graphicsContext.stroke();
 		            		oldPath = newPath;
-		            		
+		            		System.out.println("test");
+		            		System.out.println("newPath");
 		            		
 		            	}
 		            }
@@ -578,14 +579,15 @@ public class ClientController implements Runnable{
 
 //						System.out.println(stuff);
 						String buffer = dis.readUTF();
-						String str = buffer;
-						if(str.startsWith("dodraw")){
+						String str = buffer.toString();
+//						if(str.startsWith("dodraw")){
 							str = str.replace("dodraw", "");
 		            	newPath = str;
-						}
-					else{
+//						}
+//					else{
 						chatLog.appendText(str+"\n");
-						}
+//						}
+						newPath = "";
 						break;
 					case ServerConstants.REGISTER_CLIENT:
 						
