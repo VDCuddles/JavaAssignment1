@@ -70,7 +70,7 @@ public class ClientController implements Runnable{
     double ex;
     double ey;
     SVGPath svg = new SVGPath();
-    String sendPath = "";
+    String sendPath = "dodraw";
     String newPath = "";
 	String oldPath;
 
@@ -259,7 +259,7 @@ public class ClientController implements Runnable{
 //                graphicsContext.closePath();
 
                 }
-                
+
             }
         });
  
@@ -268,8 +268,8 @@ public class ClientController implements Runnable{
  
             @Override
             public void handle(MouseEvent event) {
-            	sendDraw();
 				graphicsContext.stroke();
+            	sendDraw();
 
             }
         });
@@ -570,14 +570,25 @@ public class ClientController implements Runnable{
 		{
 			try {
 				int messageType = dis.readInt(); // receive a message from the server, determine message type based on an integer
-				
+//				String data = dis.readUTF();
 				// decode message and process
 				switch(messageType)
 				{
 					case ServerConstants.CHAT_BROADCAST:
-						chatLog.appendText(dis.readUTF()+"\n");
+
+//						System.out.println(stuff);
+						String buffer = dis.readUTF();
+						String str = buffer;
+						if(str.startsWith("dodraw")){
+							str = str.replace("dodraw", "");
+		            	newPath = str;
+						}
+					else{
+						chatLog.appendText(str+"\n");
+						}
 						break;
 					case ServerConstants.REGISTER_CLIENT:
+						
 					try {
 						//Clear the client list
 						m_names.clear();
@@ -594,31 +605,8 @@ public class ClientController implements Runnable{
 					break;
 					case ServerConstants.DRAW_BROADCAST:
 		            try {
-//			                ByteArrayInputStream byteInput= new ByteArrayInputStream(null);
-//			                byte[] size = ByteBuffer.allocate(4).putInt(inputStream.available()).array();
-//
-//			            	byteInput.read(size);
-//			                otherClient.getOutputStream() = byteOutput;
-//			                socket.getInputStream().read();//(byteOutput.toByteArray());	
-//			                try {
-//								System.out.println("image = " + SwingFXUtils.toFXImage(image,null).getHeight());
-//								System.out.println("image = " + SwingFXUtils.toFXImage(image,null).getWidth());
-//								System.out.println("image = " + SwingFXUtils.toFXImage(image,null).toString());
-//							} catch (Exception ex) {
-//				                ex.printStackTrace();
-//							}
-//						
-//		            	
-//		            	
-//		            	BufferedImage image = ImageIO.read(inputStream);
-//		            	canvas.getGraphicsContext2D().drawImage(SwingFXUtils.toFXImage(image,null), (double)image.getWidth(), (double)image.getHeight());
-		            	System.out.println(dis.readUTF());
+		            	System.out.println("clrecieved = "+ dis.readUTF());
 		            	newPath = dis.readUTF();
-//		    	        SVGPath svg = new SVGPath();
-//		    	        svg.setContent(sendPath);
-//		    	    	graphicsContext.beginPath();
-//		    	    	graphicsContext.appendSVGPath(svg.getContent());
-//		    	    	graphicsContext.stroke();
 		    	    	
 		            	}
 			             catch (IOException ex) {
@@ -658,12 +646,15 @@ public class ClientController implements Runnable{
     }
 	
 	public void sendDraw(){
+		
+		//definitely this bad boy causing trouble
+		
 		try {
-			dos.writeInt(ServerConstants.DRAW_IMAGE); // determine the type of message to be sent
+			dos.writeInt(ServerConstants.CHAT_MESSAGE); // determine the type of message to be sent
 			dos.writeUTF(sendPath); // message payload
 			
 			dos.flush(); // force the message to be sent (sometimes data can be buffered)
-	    	sendPath = "";
+//	    	sendPath = "";
 		}
 		catch (IOException e){
 			e.printStackTrace();

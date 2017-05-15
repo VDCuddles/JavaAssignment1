@@ -54,14 +54,14 @@ public class ServerThread extends Thread {
 		{
 			try {
 				int mesgType = dis.readInt(); // read the type of message from the client (must be an integer)
-				System.err.println(mesgType);
+				System.out.println("mtype = " + mesgType);
 
 				// decode the message type based on the integer sent from the client
 				switch(mesgType)
 				{
 					case ServerConstants.CHAT_MESSAGE:
 						String data = dis.readUTF();
-						System.err.println(data);
+						System.out.println("data = " + data);
 						server.getSystemLog().appendText(remoteClient.getInetAddress()+":"+remoteClient.getPort()+" >"+ nick + ": "+data+"\n");
 						
 						for(ServerThread otherClient: connectedClients)
@@ -79,7 +79,7 @@ public class ServerThread extends Thread {
 						
 					case ServerConstants.DRAW_IMAGE:
 						server.getSystemLog().appendText(remoteClient.getInetAddress()+": (image data sent)\n");
-						String data2 = dis.readUTF();
+//						String data2 = dis.readUTF();
 //						System.err.println(data2);
 						for(ServerThread otherClient: connectedClients)
 						{
@@ -93,7 +93,7 @@ public class ServerThread extends Thread {
 //				                otherClient.getOutputStream().write(size);			                 
 //				                otherClient.getOutputStream().write(byteOutput.toByteArray());			      
 							    otherClient.getDos().writeInt(ServerConstants.DRAW_BROADCAST);
-								otherClient.getDos().writeUTF(data2);
+								otherClient.getDos().writeUTF(dis.readUTF());
 							}
 						}
 

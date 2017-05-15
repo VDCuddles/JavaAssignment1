@@ -267,7 +267,7 @@
    <center>
       <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Canvas fx:id="canvas" height="463.0" translateY="60.0" width="463.0" />
+            <Canvas fx:id="canvas" height="463.0" translateX="-15.0" translateY="60.0" width="463.0" />
          </children>
       </Pane>
    </center>
