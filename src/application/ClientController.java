@@ -71,6 +71,7 @@ public class ClientController implements Runnable{
     SVGPath svg = new SVGPath();
     String sendPath = "dodraw";
     String newPath = "";
+    String newColour = "";
 	String oldPath;
 
     
@@ -249,6 +250,7 @@ public class ClientController implements Runnable{
             	graphicsContext.appendSVGPath(svg.getContent());
 		        sendPath += svg.getContent();
 
+
 //				graphicsContext.fill();
                 if(sx != event.getX() || sy != event.getY()){
                 	sx = event.getX();
@@ -271,6 +273,7 @@ public class ClientController implements Runnable{
             @Override
             public void handle(MouseEvent event) {
 				graphicsContext.stroke();
+		        sendPath += ":" + (svg.getStroke().toString());
             	sendDraw();
 
             }
@@ -542,26 +545,6 @@ public class ClientController implements Runnable{
 		}
 		
 		System.out.println(socket.toString());
-		
-//		java.util.Timer t = new java.util.Timer();
-//		t.schedule(new TimerTask() {
-//
-//		            @Override
-//		            public void run() {
-////		                System.out.println("This will run every 100ms");
-////						checkPaths();
-//		            	if (oldPath != newPath){
-//		            		graphicsContext.beginPath();
-//		            		graphicsContext.appendSVGPath(newPath);
-//		            		graphicsContext.stroke();
-//		            		oldPath = newPath;
-//		            		System.out.println("test");
-//		            		System.out.println("newPath");
-//		            		
-//		            	}
-//		            }
-//		        }, 100, 100);
-
 
 	}
 	
@@ -573,23 +556,33 @@ public class ClientController implements Runnable{
 		{
 			try {
 				int messageType = dis.readInt(); // receive a message from the server, determine message type based on an integer
-//				String data = dis.readUTF();
 				// decode message and process
 				switch(messageType)
 				{
 					case ServerConstants.CHAT_BROADCAST:
 
-//						System.out.println(stuff);
 						String buffer = dis.readUTF();
 						String str = buffer.toString();
-//						if(str.startsWith("dodraw")){
-							str = str.replace("dodraw", "");
-		            	newPath = str;
-//						}
-//					else{
-						chatLog.appendText(str+"\n");
-//						}
-	            		System.out.println("newPath = " + newPath);
+						str = str.replace("dodraw", "");
+						String[] split = str.split(":");
+						
+					for (int i = 0; i < split.length; i++) {
+							System.out.println(i + split[i].toString());
+					}
+					
+					try {
+						if (split.length > 1) {
+							newPath = split[3];
+							newColour = split[4];
+						} 
+					} catch (Exception e) {
+		                e.printStackTrace();
+					}
+					if (str.length() < 400 ) {
+						chatLog.appendText(str + "\n");
+					}
+            		System.out.println("newPath = " + newPath);
+            		System.out.println("newColour = " + newColour);
 	            		
 						break;
 					case ServerConstants.REGISTER_CLIENT:
@@ -608,16 +601,7 @@ public class ClientController implements Runnable{
 		                ex.printStackTrace();
 					}
 					break;
-//					case ServerConstants.DRAW_BROADCAST:
-//		            try {
-//		            	System.out.println("clrecieved = "+ dis.readUTF());
-//		            	newPath = dis.readUTF();
-//		    	    	
-//		            	}
-//			             catch (IOException ex) {
-//			                ex.printStackTrace();
-//			            }
-//					break;
+
 				}
 			}
 			catch (IOException e)
@@ -630,8 +614,6 @@ public class ClientController implements Runnable{
 	        path.setFill(graphicsContext.getFill());
 	        path.setStroke(graphicsContext.getStroke());
 	        path.setStrokeWidth(3);
-	        System.out.println(path.toString());
-	        System.out.println(path.getContent());
 	        graphicsContext.beginPath();
 	        graphicsContext.appendSVGPath(path.getContent());
 	        graphicsContext.stroke();

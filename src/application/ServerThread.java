@@ -71,8 +71,8 @@ public class ServerThread extends Thread {
 								//timestamp in this format to help with historical referencing
 							    String timeStamp = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z").format(new Date());
 							    otherClient.getDos().writeInt(ServerConstants.CHAT_BROADCAST);
-//								otherClient.getDos().writeUTF(nick + "> " + "(" + timeStamp + "): " + data );
-								otherClient.getDos().writeUTF(data );
+								otherClient.getDos().writeUTF(nick + "> " + "(" + timeStamp + "):" + data );
+//								otherClient.getDos().writeUTF(data );
 							}
 						}
 						
