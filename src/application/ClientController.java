@@ -64,8 +64,6 @@ public class ClientController implements Runnable{
     OutputStream outputStream;
     InputStream inputStream;
 
-    GraphicsContext gGraphicsContext;
-    
     double sx;
     double sy;
     double ex;
@@ -192,6 +190,8 @@ public class ClientController implements Runnable{
     private Pane pane1_11;
     @FXML
     private ImageView img1_11;
+    
+    GraphicsContext graphicsContext;
 
 	public void initialize(){
 		
@@ -200,8 +200,8 @@ public class ClientController implements Runnable{
 				pane0_10,pane1_10,pane0_11,pane1_11};
 		toolPaneList = new Pane[]{pane0_0,pane0_1}; 
 		
-	    final GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
-	    gGraphicsContext = graphicsContext;
+	    graphicsContext = canvas.getGraphicsContext2D();
+//	    gGraphicsContext = graphicsContext;
 	    initDraw(graphicsContext);
 	    
 		selectPencil();
@@ -543,24 +543,24 @@ public class ClientController implements Runnable{
 		
 		System.out.println(socket.toString());
 		
-		java.util.Timer t = new java.util.Timer();
-		t.schedule(new TimerTask() {
-
-		            @Override
-		            public void run() {
-//		                System.out.println("This will run every 100ms");
-//						checkPaths();
-		            	if (oldPath != newPath){
-		            		graphicsContext.beginPath();
-		            		graphicsContext.appendSVGPath(newPath);
-		            		graphicsContext.stroke();
-		            		oldPath = newPath;
-		            		System.out.println("test");
-		            		System.out.println("newPath");
-		            		
-		            	}
-		            }
-		        }, 100, 100);
+//		java.util.Timer t = new java.util.Timer();
+//		t.schedule(new TimerTask() {
+//
+//		            @Override
+//		            public void run() {
+////		                System.out.println("This will run every 100ms");
+////						checkPaths();
+//		            	if (oldPath != newPath){
+//		            		graphicsContext.beginPath();
+//		            		graphicsContext.appendSVGPath(newPath);
+//		            		graphicsContext.stroke();
+//		            		oldPath = newPath;
+//		            		System.out.println("test");
+//		            		System.out.println("newPath");
+//		            		
+//		            	}
+//		            }
+//		        }, 100, 100);
 
 
 	}
@@ -589,12 +589,8 @@ public class ClientController implements Runnable{
 //					else{
 						chatLog.appendText(str+"\n");
 //						}
-	            		System.out.println(newPath);
-		            		gGraphicsContext.beginPath();
-		            		gGraphicsContext.appendSVGPath(str);
-		            		gGraphicsContext.stroke();
-		            		System.out.println("test");
-		            		
+	            		System.out.println("newPath = " + newPath);
+	            		
 						break;
 					case ServerConstants.REGISTER_CLIENT:
 						
@@ -612,22 +608,34 @@ public class ClientController implements Runnable{
 		                ex.printStackTrace();
 					}
 					break;
-					case ServerConstants.DRAW_BROADCAST:
-		            try {
-		            	System.out.println("clrecieved = "+ dis.readUTF());
-		            	newPath = dis.readUTF();
-		    	    	
-		            	}
-			             catch (IOException ex) {
-			                ex.printStackTrace();
-			            }
-					break;
+//					case ServerConstants.DRAW_BROADCAST:
+//		            try {
+//		            	System.out.println("clrecieved = "+ dis.readUTF());
+//		            	newPath = dis.readUTF();
+//		    	    	
+//		            	}
+//			             catch (IOException ex) {
+//			                ex.printStackTrace();
+//			            }
+//					break;
 				}
 			}
 			catch (IOException e)
 			{
 				e.printStackTrace();
 			}
+    	    final GraphicsContext gc = canvas.getGraphicsContext2D();
+    	    initDraw(gc);
+//    	    gc.beginPath();
+	        SVGPath path = new SVGPath();
+	        path.setContent(newPath);
+	        path.setFill(gc.getFill());
+	        path.setStroke(gc.getStroke());
+	        path.setStrokeWidth(3);
+	        System.out.println(path.toString());
+	        System.out.println(path.getContent());
+	        gc.appendSVGPath(path.getContent());
+	        gc.stroke();
 		}
 		
 	}
@@ -757,7 +765,7 @@ public class ClientController implements Runnable{
 	         
 	        gc.setFill(Color.RED);
 	        gc.setStroke(Color.BLACK);
-	        gc.setLineWidth(1);
+	        gc.setLineWidth(3);
 	         
 	    }
 	    

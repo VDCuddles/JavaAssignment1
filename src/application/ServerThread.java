@@ -71,33 +71,34 @@ public class ServerThread extends Thread {
 								//timestamp in this format to help with historical referencing
 							    String timeStamp = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss z").format(new Date());
 							    otherClient.getDos().writeInt(ServerConstants.CHAT_BROADCAST);
-								otherClient.getDos().writeUTF(nick + "> " + "(" + timeStamp + "): " + data );
+//								otherClient.getDos().writeUTF(nick + "> " + "(" + timeStamp + "): " + data );
+								otherClient.getDos().writeUTF(data );
 							}
 						}
 						
 						break;
 						
-					case ServerConstants.DRAW_IMAGE:
-						server.getSystemLog().appendText(remoteClient.getInetAddress()+": (image data sent)\n");
-//						String data2 = dis.readUTF();
-//						System.err.println(data2);
-						for(ServerThread otherClient: connectedClients)
-						{
-							if(!otherClient.equals(this)) // don't send the message to the client that sent the message in the first place
-							{
-								
+//					case ServerConstants.DRAW_IMAGE:
+//						server.getSystemLog().appendText(remoteClient.getInetAddress()+": (image data sent)\n");
+////						String data2 = dis.readUTF();
+////						System.err.println(data2);
+//						for(ServerThread otherClient: connectedClients)
+//						{
+//							if(!otherClient.equals(this)) // don't send the message to the client that sent the message in the first place
+//							{
+//								
+////							    otherClient.getDos().writeInt(ServerConstants.DRAW_BROADCAST);
+////
+////				                ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+////				                byte[] size = ByteBuffer.allocate(4).putInt(byteOutput.size()).array();
+////				                otherClient.getOutputStream().write(size);			                 
+////				                otherClient.getOutputStream().write(byteOutput.toByteArray());			      
 //							    otherClient.getDos().writeInt(ServerConstants.DRAW_BROADCAST);
+//								otherClient.getDos().writeUTF(dis.readUTF());
+//							}
+//						}
 //
-//				                ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-//				                byte[] size = ByteBuffer.allocate(4).putInt(byteOutput.size()).array();
-//				                otherClient.getOutputStream().write(size);			                 
-//				                otherClient.getOutputStream().write(byteOutput.toByteArray());			      
-							    otherClient.getDos().writeInt(ServerConstants.DRAW_BROADCAST);
-								otherClient.getDos().writeUTF(dis.readUTF());
-							}
-						}
-
-						break;
+//						break;
 						
 					case ServerConstants.REGISTER_CLIENT:
 						
