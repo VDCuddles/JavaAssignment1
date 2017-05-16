@@ -20,8 +20,6 @@ public class Main extends Application{
             URL fxmlUrl = this.getClass().getClassLoader().getResource("Server.fxml");
             Pane mainPane = loader.<Pane>load(fxmlUrl);
 
-/*            ServerController controller = loader.getController();
-*/
             // Show the scene containing the root layout.
             Scene scene = new Scene(mainPane);
             primaryStage.setTitle("Assignment 1");

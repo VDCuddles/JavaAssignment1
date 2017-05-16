@@ -1,7 +1,5 @@
 package application;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -10,10 +8,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,7 +23,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ButtonType;
@@ -47,8 +42,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
-import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Transform;
 import javafx.stage.FileChooser;
 
 public class ClientController implements Runnable{
@@ -202,7 +195,6 @@ public class ClientController implements Runnable{
 		toolPaneList = new Pane[]{pane0_0,pane0_1}; 
 		
 	    graphicsContext = canvas.getGraphicsContext2D();
-//	    gGraphicsContext = graphicsContext;
 	    initDraw(graphicsContext);
 	    
 		selectPencil();
@@ -218,8 +210,8 @@ public class ClientController implements Runnable{
             	
                 if (selectedTool == img0_0) {
 					graphicsContext.beginPath();
-//					graphicsContext.moveTo(event.getX(), event.getY());
-//					graphicsContext.stroke();
+					graphicsContext.moveTo(event.getX(), event.getY());
+					graphicsContext.stroke();
 			        SVGPath path = new SVGPath();
 			        path.setContent("M "+(int)event.getX()+","+(int)event.getY());
 			        graphicsContext.appendSVGPath(path.getContent());
@@ -240,18 +232,16 @@ public class ClientController implements Runnable{
             public void handle(MouseEvent event) {
             	
                 if (selectedTool == img0_0) {
-//                graphicsContext.lineTo(event.getX(), event.getY());
-//                graphicsContext.stroke();
+                graphicsContext.lineTo(event.getX(), event.getY());
+                graphicsContext.stroke();
 
 				ex = event.getX();
 				ey = event.getY();
 				svg = drawSVG(sx,sy,ex,ey,graphicsContext);
-//				System.out.println(svg.toString());
             	graphicsContext.appendSVGPath(svg.getContent());
 		        sendPath += svg.getContent();
 
 
-//				graphicsContext.fill();
                 if(sx != event.getX() || sy != event.getY()){
                 	sx = event.getX();
                 	sy = event.getY();
@@ -260,7 +250,6 @@ public class ClientController implements Runnable{
                 	ex = event.getX();
                 	ey = event.getY();
                 }
-//                graphicsContext.closePath();
 
                 }
 
@@ -285,7 +274,7 @@ public class ClientController implements Runnable{
             @Override
             public void handle(MouseEvent event) {
                 if (selectedTool == img0_1) {
-                	Canvas can = new Canvas();
+//                	Canvas can = new Canvas();
 //                	can.set
                 }
             }
@@ -326,14 +315,12 @@ public class ClientController implements Runnable{
  
             @Override
             public void handle(MouseEvent event) {
-            	saveImage(graphicsContext);
+            	saveImage();
  
             }
         });
         
         //colour handlers
-        
-
         
         img0_2.addEventHandler(MouseEvent.MOUSE_CLICKED, 
                 new EventHandler<MouseEvent>(){
@@ -669,31 +656,6 @@ public class ClientController implements Runnable{
 		catch (IOException e){
 			e.printStackTrace();
 		}
-		
-		
-//		try {
-////			 try {
-//			
-//			//first write the image to disk
-//                 WritableImage writableImage = new WritableImage((int)canvas.getWidth(), (int)canvas.getHeight());
-//                 canvas.snapshot(null, writableImage);
-//                 
-////                 File file = new File("temp.png");
-////                 try {
-////         	          ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", file);
-////                 } catch (IOException ex) {
-////                     Logger.getLogger(ClientController.class.getName()).log(Level.SEVERE, null, ex);
-////                 }
-////                 BufferedImage bImage = ImageIO.read(new File("temp.png"));
-//				   dos.writeInt(ServerConstants.DRAW_IMAGE); // determine the type of message to be sent
-//                   ImageIO.write(SwingFXUtils.fromFXImage(writableImage, null), "png", outputStream);
-//                   dos.flush(); // force the message to be sent (sometimes data can be buffered)
-//                   outputStream.flush();
-//                   
-//		}
-//		catch (IOException e){
-//			e.printStackTrace();
-//		}
 
 	 }
 
@@ -781,7 +743,7 @@ public class ClientController implements Runnable{
 	    }
 	    
 	    @FXML
-	    private void saveImage(GraphicsContext gc){
+	    private void saveImage(){
 	    	
 	    	//code here references http://java-buddy.blogspot.co.nz/2013/04/save-canvas-to-png-file.html	    	
 
@@ -984,14 +946,5 @@ public class ClientController implements Runnable{
 	        path.setStrokeWidth(3);
 	        return path;    
 	    }
-	    
-//	    public void renderFromStream(GraphicsContext gc, String path){
-//	        SVGPath svg = new SVGPath();
-//	        svg.setContent(path);
-//	    	gc.beginPath();
-//	    	gc.appendSVGPath(svg.getContent());
-//	    	gc.stroke();
-//	    }
-	    
 
 }

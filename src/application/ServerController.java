@@ -51,28 +51,23 @@ public class ServerController {
 
 		            @Override
 		            public void run() {
-/*		                System.out.println("This will run every 100ms");
-*/						start();
+						start();
 		            }
 		        }, 100, 100);
-/*		
-*/		
 	}
 	
 	public void start()
 	{
 		try
 		{
-/*			while(true) // keep accepting new clients
-			{*/
+				// keep accepting new clients
+
 				Socket remoteClient = serverSocket.accept(); // block and wait for a connection from a client
 								
 				// construct a new server thread, to handle each client socket
 				ServerThread st = new ServerThread(remoteClient,this,connectedClients);
 				st.start();
 				connectedClients.add(st);
-//				System.out.println("test");
-			/*}*/
 		}
 		catch (IOException e)
 		{
