@@ -64,6 +64,7 @@ public class ClientController implements Runnable{
     OutputStream outputStream;
     InputStream inputStream;
 
+    GraphicsContext gGraphicsContext;
     
     double sx;
     double sy;
@@ -200,6 +201,7 @@ public class ClientController implements Runnable{
 		toolPaneList = new Pane[]{pane0_0,pane0_1}; 
 		
 	    final GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+	    gGraphicsContext = graphicsContext;
 	    initDraw(graphicsContext);
 	    
 		selectPencil();
@@ -587,7 +589,12 @@ public class ClientController implements Runnable{
 //					else{
 						chatLog.appendText(str+"\n");
 //						}
-						newPath = "";
+	            		System.out.println(newPath);
+		            		gGraphicsContext.beginPath();
+		            		gGraphicsContext.appendSVGPath(str);
+		            		gGraphicsContext.stroke();
+		            		System.out.println("test");
+		            		
 						break;
 					case ServerConstants.REGISTER_CLIENT:
 						
@@ -656,7 +663,7 @@ public class ClientController implements Runnable{
 			dos.writeUTF(sendPath); // message payload
 			
 			dos.flush(); // force the message to be sent (sometimes data can be buffered)
-//	    	sendPath = "";
+	    	sendPath = "dodraw";
 		}
 		catch (IOException e){
 			e.printStackTrace();
