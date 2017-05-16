@@ -624,18 +624,17 @@ public class ClientController implements Runnable{
 			{
 				e.printStackTrace();
 			}
-    	    final GraphicsContext gc = canvas.getGraphicsContext2D();
-    	    initDraw(gc);
 //    	    gc.beginPath();
 	        SVGPath path = new SVGPath();
 	        path.setContent(newPath);
-	        path.setFill(gc.getFill());
-	        path.setStroke(gc.getStroke());
+	        path.setFill(graphicsContext.getFill());
+	        path.setStroke(graphicsContext.getStroke());
 	        path.setStrokeWidth(3);
 	        System.out.println(path.toString());
 	        System.out.println(path.getContent());
-	        gc.appendSVGPath(path.getContent());
-	        gc.stroke();
+	        graphicsContext.beginPath();
+	        graphicsContext.appendSVGPath(path.getContent());
+	        graphicsContext.stroke();
 		}
 		
 	}
