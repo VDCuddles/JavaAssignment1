@@ -578,7 +578,7 @@ public class ClientController implements Runnable{
 					} catch (Exception e) {
 		                e.printStackTrace();
 					}
-					if (str.length() < 400 ) {
+					if (str.length() < 300 ) {
 						chatLog.appendText(str + "\n");
 					}
             		System.out.println("newPath = " + newPath);
@@ -611,9 +611,21 @@ public class ClientController implements Runnable{
 //    	    gc.beginPath();
 	        SVGPath path = new SVGPath();
 	        path.setContent(newPath);
-	        path.setFill(graphicsContext.getFill());
-	        path.setStroke(graphicsContext.getStroke());
-	        path.setStrokeWidth(3);
+	        if (newColour == ""){
+	        	newColour = "0x000000ff";	        	
+	        }
+	        if (newColour == null){
+	        	newColour = "0x000000ff";	        	
+	        }
+	        try {
+				Color color = Color.web(newColour.toString());
+		        System.out.println("pathcolour="+color.toString());
+		        graphicsContext.setFill(color);
+		        graphicsContext.setStroke(color);
+			} catch (Exception e) {
+                e.printStackTrace();
+			}
+			path.setStrokeWidth(3);
 	        graphicsContext.beginPath();
 	        graphicsContext.appendSVGPath(path.getContent());
 	        graphicsContext.stroke();
